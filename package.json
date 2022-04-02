@@ -1,0 +1,26 @@
+{
+    "name": "liricle",
+    "version": "1.0.0-beta",
+    "description": "lrc player",
+    "main": "dist/liricle.min.js",
+    "module": "src/index.js",
+    "scripts": {
+        "watch": "rollup -c -w",
+        "build": "rollup -c"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mcanam/liricle.git"
+    },
+    "keywords": [],
+    "author": "mcanam",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/mcanam/liricle/issues"
+    },
+    "homepage": "https://github.com/mcanam/liricle#readme",
+    "devDependencies": {
+        "rollup": "^2.70.1",
+        "rollup-plugin-terser": "^7.0.2"
+    }
+}
