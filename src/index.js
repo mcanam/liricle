@@ -1,58 +1,41 @@
-import parser from "./lib/parser.js";
-import render from "./lib/render.js";
-import mapper from "./lib/mapper.js";
-import { timeToText } from "./lib/utils.js";
+import parser from "./libs/parser.js";
+import mapper from "./libs/mapper.js";
+
+import { timeToText } from "./libs/utils.js";
 
 class Liricle {
-    constructor(container) {
-        if (!(container instanceof HTMLElement)) {
-            container = document.querySelector(container);
-        }
-        
-        if (!container) {
-            throw Error("[Liricle]: 404 container not found!");
-        }
-        
-        this.container  = container;
-        this.activeNode = null;
-        this.ready = false;
+    constructor() {
+        this.data = {};
         this.map = {};
+        this.lines = [];
+        this.activeLine = null;
     }
     
-    async init(url) {
-        this.ready = false;
+    init(text, callback = () => {}) {
+        this.data = parser(text);
+        this.map = mapper(this.data);
         
-        try {
-            const text = await fetch(url).then(res => res.text());
-            const data = parser(text);
-            
-            render(this.container, data);
-            mapper(this.container, this.map, data);
-            
-            this.ready = true;
-        }
+        const { info, timeline } = this.data;
         
-        catch (error) {
-            throw Error("[Liricle]: " + error);
-        }
+        timeline.forEach(line => {
+            this.lines.push(line.text);
+        });
+        
+        callback(info, this.lines);
     }
     
-    sync(time) {
-        if (!this.ready) return;
-        
+    sync(time, callback = () => {}) {
         const key = timeToText(time);
-        const node = this.map[key];
+        const line = this.map[key]; 
         
-        if (!node || this.activeNode == node) return;
+        if (!line) return;
         
-        if (this.activeNode) {
-            this.activeNode.classList.remove("active");
+        const [index, text] = line;
+        
+        if (this.activeLine != index) {
+            callback(index, text);
+            this.activeLine = index;
         }
-        
-        this.activeNode = node;
-        this.activeNode.classList.add("active");
-        
-        this.container.scrollTop = node.offsetTop - (this.container.offsetHeight / 2);
     }
 }
 

@@ -1,11 +1,12 @@
 import { timeToText, textToTime } from "./utils.js";
 
-function mapper(container, map, data) {
-    const nodes = container.children;
+function mapper(input) {
+    const timeline = input.timeline;
+    const output = {};
     
-    data.forEach((item, index) => {
-        let start = item.time;
-        let end = data[index + 1];
+    timeline.forEach((line, index) => {
+        let start = line.time;
+        let end = timeline[index + 1];
     
         if (!end) return;
     
@@ -13,17 +14,20 @@ function mapper(container, map, data) {
         end = textToTime(end.time);
     
         const diff = end - start;
-        const node = nodes[index];
     
         let i = 0;
     
         for (; i < diff;) {
             const time = timeToText(start + i);
-            map[time] = node;
+            const text = line.text;
+            
+            output[time] = [index, text];
     
             i += 0.01;
         }
     });
+    
+    return output;
 }
 
 export default mapper;

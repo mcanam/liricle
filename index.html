@@ -5,70 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            width: 100%;
-            height: 100vh;
-            padding: 20px;
-            margin: 0;
-            overflow: hidden;
-        }
-        
-        .player {
-            width: 100%;
-        }
-        
-        .liricle {
-            width: 100%;
-            height: 100%;
-            padding: 100px 20px;
-            overflow: auto;
-            scroll-behavior: smooth;
-        }
-        
-        .liricle-line {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 40px;
-            opacity: 0.1;
-            transition: 0.1s;
-        }
-        
-        .liricle-line.active {
-            opacity: 1;
-        }
-    </style>
+    <title>liricle</title>
 </head>
 
 <body>
     <audio src="assets/song.mp3" controls class="player"></audio>
-    <div class="liricle"></div>
+    <div class="display">lyric will appear here...</div>
 
     <script src="dist/liricle.js"></script>
     <script>
+        // get element
         const player = document.querySelector(".player");
-        const liricle = new Liricle(".liricle");
-
-        liricle.init("assets/song.lrc");
-
-        let timer = null;
-
-        player.onplay = () => {
-            timer = setInterval(() => {
+        const display = document.querySelector(".display");
+        
+        // create liricle instance
+        const liricle = new Liricle();
+        
+        // fetch lrc file
+        fetch("assets/song.lrc").then(async res => {
+            const text = await res.text();
+            
+            // initialize liricle
+            liricle.init(text, (info, lines) => {
+                // do something with this callback...
+            });
+            
+            // listen player time update event
+            player.ontimeupdate = () => {
+                // get player current time
                 const time = player.currentTime;
-                liricle.sync(time);
-            }, 10);
-        }
-
-        player.onpause = () => {
-            clearInterval(timer);
-        }
+                
+                // sync lyrics
+                liricle.sync(time, (index, text) => {
+                    // print text to display element
+                    display.innerText = text;
+                });
+            }
+        });
     </script>
 </body>
 

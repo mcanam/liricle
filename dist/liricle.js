@@ -6,43 +6,38 @@
 
     function parser(input) {
         const lines = input.split("\n");
-        const output = [];
+        const output = { info: {}, timeline: [] };
         
         lines.forEach(line => {
             if (!line) return;
         
-            const regex = /\[(?<time>.*)\]((?<text>.*))?/;
+            const regex = /\[(?<meta>.*)\]((?<text>.*))?/;
             const match = line.match(regex);
         
             if (!match || !match.groups) {
                 return console.warn("invalid line: '" + line + "'");
             }
         
-            const { time, text } = match.groups;
-            const isTime = /\d+:\d\d\.\d+/.test(time);
+            const { meta, text } = match.groups;
+            const isTime = /\d+:\d\d\.\d+/.test(meta);
         
-            if (!isTime) return;
-        
-            output.push({ time, text });
+            if (isTime) {
+                output.timeline.push({ 
+                    time: meta, 
+                    text: text || ""
+                });
+            }
+            
+            else {
+                const props = meta.split(":");
+                const name  = props[0];
+                const value = props[1];
+                
+                output.info[name] = value;
+            }
         });
         
         return output;
-    }
-
-    function render(container, data) {
-        const fragment = document.createDocumentFragment();
-        
-        data.forEach((item, index) => {
-            const node = document.createElement("div");
-            
-            node.className = "liricle-line";
-            node.innerText = item.text || "";
-            
-            fragment.append(node);
-        });
-        
-        container.innerHTML = "";
-        container.append(fragment);
     }
 
     function timeToText(time) {
@@ -63,12 +58,13 @@
         return parseFloat((min + sec).toFixed(2));
     }
 
-    function mapper(container, map, data) {
-        const nodes = container.children;
+    function mapper(input) {
+        const timeline = input.timeline;
+        const output = {};
         
-        data.forEach((item, index) => {
-            let start = item.time;
-            let end = data[index + 1];
+        timeline.forEach((line, index) => {
+            let start = line.time;
+            let end = timeline[index + 1];
         
             if (!end) return;
         
@@ -76,69 +72,55 @@
             end = textToTime(end.time);
         
             const diff = end - start;
-            const node = nodes[index];
         
             let i = 0;
         
             for (; i < diff;) {
                 const time = timeToText(start + i);
-                map[time] = node;
+                const text = line.text;
+                
+                output[time] = [index, text];
         
                 i += 0.01;
             }
         });
+        
+        return output;
     }
 
     class Liricle {
-        constructor(container) {
-            if (!(container instanceof HTMLElement)) {
-                container = document.querySelector(container);
-            }
-            
-            if (!container) {
-                throw Error("[Liricle]: 404 container not found!");
-            }
-            
-            this.container  = container;
-            this.activeNode = null;
-            this.ready = false;
+        constructor() {
+            this.data = {};
             this.map = {};
+            this.lines = [];
+            this.activeLine = null;
         }
         
-        async init(url) {
-            this.ready = false;
+        init(text, callback = () => {}) {
+            this.data = parser(text);
+            this.map = mapper(this.data);
             
-            try {
-                const text = await fetch(url).then(res => res.text());
-                const data = parser(text);
-                
-                render(this.container, data);
-                mapper(this.container, this.map, data);
-                
-                this.ready = true;
-            }
+            const { info, timeline } = this.data;
             
-            catch (error) {
-                throw Error("[Liricle]: " + error);
-            }
+            timeline.forEach(line => {
+                this.lines.push(line.text);
+            });
+            
+            callback(info, this.lines);
         }
         
-        sync(time) {
-            if (!this.ready) return;
-            
+        sync(time, callback = () => {}) {
             const key = timeToText(time);
-            const node = this.map[key];
+            const line = this.map[key]; 
             
-            if (!node || this.activeNode == node) return;
+            if (!line) return;
             
-            if (this.activeNode) {
-                this.activeNode.classList.remove("active");
+            const [index, text] = line;
+            
+            if (this.activeLine != index) {
+                callback(index, text);
+                this.activeLine = index;
             }
-            
-            this.activeNode = node;
-            this.activeNode.classList.add("active");
-            
-            this.container.scrollTop = node.offsetTop - (this.container.offsetHeight / 2);
         }
     }
 
