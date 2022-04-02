@@ -1,7 +1,7 @@
 {
     "name": "liricle",
-    "version": "1.0.0-beta",
-    "description": "lrc player",
+    "version": "1.0.0-beta.1",
+    "description": "mini library to parse and sync lrc file",
     "main": "dist/liricle.min.js",
     "module": "src/index.js",
     "scripts": {
