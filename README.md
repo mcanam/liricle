@@ -1,5 +1,3 @@
-> 🚧 this library is beta 🚧.
-
 # liricle
 
 mini library to parse and sync lrc file
@@ -10,12 +8,12 @@ mini library to parse and sync lrc file
 
 npm
 ``` bash
-npm install liricle@beta
+npm install liricle
 ```
 
 cdn
 ``` html
-https://cdn.jsdelivr.net/npm/liricle@beta
+https://cdn.jsdelivr.net/npm/liricle
 ```
 
 # usage
