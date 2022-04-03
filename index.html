@@ -9,20 +9,26 @@
 </head>
 
 <body>
-    <audio src="assets/song.mp3" controls class="player"></audio>
+    <audio controls class="player"></audio>
     <div class="display">lyric will appear here...</div>
 
     <script src="dist/liricle.js"></script>
     <script>
+        // assets base url ( for demo only )
+        const BASE_URL = "https://cdn.jsdelivr.net/gh/mcanam/assets/liricle-demo/";
+
         // get element
         const player = document.querySelector(".player");
         const display = document.querySelector(".display");
+        
+        // load audio
+        player.src = BASE_URL + "audio.mp3";
         
         // create liricle instance
         const liricle = new Liricle();
         
         // fetch lrc file
-        fetch("assets/song.lrc").then(async res => {
+        fetch(BASE_URL + "lyric.lrc").then(async res => {
             const text = await res.text();
             
             // initialize liricle
