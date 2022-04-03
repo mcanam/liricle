@@ -54,8 +54,8 @@ liricle.sync(time, (index, text) => {
 
 ### `Liricle.sync(time: number[, callback: func])`
 
-- `time` audio player current time in milliseconds
+- `time` audio player current time in seconds
 
 - `callback` will receive two parameters
-    - index: `number` containing current active line
+    - index: `number` containing current active line ( start from 0 )
     - text: `string` containing lyric text
