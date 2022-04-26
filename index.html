@@ -2,52 +2,63 @@
 <html lang="en">
 
 <head>
+    <title>liricle</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>liricle</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .lyric {
+            font-family: sans-serif;
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1.5;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
-    <audio controls class="player"></audio>
-    <div class="display">lyric will appear here...</div>
+    <audio controls class="audio"></audio>
+    <div class="lyric">lyric will appear here...</div>
 
     <script src="dist/liricle.js"></script>
     <script>
-        // assets base url ( for demo only )
         const BASE_URL = "https://cdn.jsdelivr.net/gh/mcanam/assets/liricle-demo/";
 
-        // get element
-        const player = document.querySelector(".player");
-        const display = document.querySelector(".display");
+        const $audio = document.querySelector(".audio");
+        const $lyric = document.querySelector(".lyric");
         
-        // load audio
-        player.src = BASE_URL + "audio.mp3";
+        $audio.src = BASE_URL + "audio.mp3";
         
-        // create liricle instance
+        //////////////////////////////////////////////////
+                
         const liricle = new Liricle();
         
-        // fetch lrc file
-        fetch(BASE_URL + "lyric.lrc").then(async res => {
-            const text = await res.text();
-            
-            // initialize liricle
-            liricle.init(text, (info, lines) => {
-                // do something with this callback...
-            });
-            
-            // listen player time update event
-            player.ontimeupdate = () => {
-                // get player current time
-                const time = player.currentTime;
-                
-                // sync lyrics
-                liricle.sync(time, (index, text) => {
-                    // print text to display element
-                    display.innerText = text;
-                });
-            }
+        liricle.init({ url: BASE_URL + "lyric.lrc" });
+        
+        liricle.on("init", (info, data) => {
+            console.log(info, data);
         });
+        
+        liricle.on("sync", (index, text) => {
+            // console.log(index, text);
+            $lyric.innerText = text;
+        });
+        
+        $audio.addEventListener("timeupdate", () => {
+            const time = $audio.currentTime;
+            liricle.sync(time, 0); // sync lyric
+        });
+        
     </script>
 </body>
 

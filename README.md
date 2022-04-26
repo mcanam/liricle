@@ -1,6 +1,6 @@
 # liricle
 
-mini library to parse and sync lrc file
+mini library to run & sync lrc file
 
 [see demo](https://mcanam.github.io/liricle/)
 
@@ -19,43 +19,29 @@ https://cdn.jsdelivr.net/npm/liricle
 # usage
 
 ``` javascript
-const lyric = `
-[00:00.00] blablabla
-.....
-`;
-
 // create liricle instance
 const liricle = new Liricle();
 
 // initialize liricle
-liricle.init(lyric, (info, lines) => {
-    // do something....
+liricle.init({ url: "your-lyric.lrc" });
+// OR
+// liricle.init({ text: "[00:00.00]your lrc text" });
+
+// sync lyrics with current player time.
+// offset (optional) time in seconds, default: 0
+liricle.sync(time, offset);
+
+// listen on init event
+liricle.on("init", (info, data) => {
+    // info => {object} contain lrc tags info
+    // data => [array] contain lyric time & text object
 });
 
-// sync lyrics with given time
-liricle.sync(time, (index, text) => {
-    // do something....
+// listen on sync event
+liricle.on("sync", (index, text) => {
+    // index => current line index (start from zero)
+    // text => lyric text
 });
 ```
 
 > please see [index.html](https://github.com/mcanam/liricle/blob/main/index.html) file for full example
-
-# methods
-
-### `Liricle.init(text: string[, callback: func])`
-
-- `text` lrc text
-
-- `callback` will receive two parameters  
-    - info: `object` containing lyric info
-    - lines: `array` containing lyric text per line
-
-> you can call this method multiple times to update the lyrics
-
-### `Liricle.sync(time: number[, callback: func])`
-
-- `time` audio player current time in seconds
-
-- `callback` will receive two parameters
-    - index: `number` containing current active line ( start from 0 )
-    - text: `string` containing lyric text
