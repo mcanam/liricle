@@ -11,7 +11,7 @@ const header = `
 `;
 
 export default {
-    input: "src/index.js",
+    input: "src/liricle.js",
     output: [
         {
             file: "dist/liricle.js",
