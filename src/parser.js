@@ -1,14 +1,9 @@
+// will match: "[name:value]"
 const TAGS_REGEX = /\[([a-z]+):(.+)\]/i;
+
+// will match: "[00:00.00]" one or more.
 const TIME_REGEX = /\[\d{2}:\d{2}(.\d{2,})?\]{1,}/g;
 
-/**
- * 
- * Parse LRC text
- * 
- * @param {String} text - LRC text
- * @return {Object} 
- * 
- */
 function parser(text) {
     let info = {};
     let data = [];

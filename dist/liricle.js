@@ -1,6 +1,6 @@
 
 /*!
- * liricle v2.0.1
+ * liricle v2.1.0
  * mini library to run & sync lrc file
  * https://github.com/mcanam/liricle#readme
  * MIT license by mcanam
@@ -12,51 +12,136 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Liricle = factory());
 })(this, (function () { 'use strict';
 
+    // will match: "[name:value]"
+    const TAGS_REGEX = /\[([a-z]+):(.+)\]/i;
+
+    // will match: "[00:00.00]" one or more.
+    const TIME_REGEX = /\[\d{2}:\d{2}(.\d{2,})?\]{1,}/g;
+
+    function parser(text) {
+        let info = {};
+        let data = [];
+        
+        const lines = text.split(/\r|\n/);
+        
+        lines.forEach(line => {
+            parseTags(line);
+            parseTime(line);
+        });
+        
+        function parseTags(line) {
+            const match = line.match(TAGS_REGEX);
+            
+            if (match == null) return;
+            
+            const name  = match[1];
+            const value = match[2];
+            
+            info[name] = value;
+        }
+        
+        function parseTime(line) {
+            const match = line.match(TIME_REGEX);
+            
+            if (match == null) return;
+            
+            match.forEach(value => {
+                data.push({
+                    time: convertTime(value),
+                    text: extractText(line)
+                });
+            });
+        }
+        
+        function convertTime(time) {
+            time = time.replace(/\[|\]/g, "");
+            time = time.split(":");
+            
+            let [min, sec] = time;
+            
+            min = parseInt(min) * 60;
+            sec = parseFloat(sec);
+            
+            return min + sec;
+        }
+        
+        function extractText(text) {
+            text = text.replace(TIME_REGEX, "");
+            return text.trim();
+        }
+        
+        function sortData(data) {
+            return data.sort((a, b) => a.time - b.time);
+        }
+        
+        return { info, data: sortData(data) };
+    }
+
+    function sync(data, time) {
+        const scores = [];
+        
+        data.forEach(line => {
+            // get gap or time distance
+            const score = time - line.time;
+            if (score >= 0) scores.push(score);
+        });
+        
+        if (scores.length == 0) return null;
+        
+        // get the smallest value from scores
+        const closest = Math.min(...scores);
+        
+        // return the index of closest lyric
+        return scores.indexOf(closest);
+    }
+
     class Liricle {
         constructor() {
+            this._activeLine = null;
             this._onInit = () => {};
             this._onSync = () => {};
 
-            this._info = {};
-            this._data = [];
-
-            this._activeLine = null;
+            this.info = {};
+            this.data = [];
         }
 
         async init({ text, url }) {
-            let lyric = "";
-
-            if (text) {
-                lyric = text;
-            } 
+            let lrc = text;
             
-            else if (url) {
-                lyric = await this._loadLyric(url);
-            } 
-            
-            else {
-                throw Error("Missing parameter. You can pass text or url from lrc file.");
+            if (url) {
+                try {
+                    const resp = await fetch(url);
+                    const body = await resp.text();
+                
+                    lrc = body;
+                }
+                
+                catch (error) { throw Error(error) }
             }
-
-            this._parseLyric(lyric);
-            this._onInit(this._info, this._data);
+            
+            const { info, data } = parser(lrc);
+            
+            this.info = info;
+            this.data = data;
+            
+            this._onInit(info, data);
         }
 
         sync(time, offset = 0) {
-            const index = this._findLineIndex(time + offset);
-
+            const index = sync(this.data, time + offset);
+            
             if (index == null) return;
             if (index == this._activeLine) return;
-
-            const text = this._data[index].text;
-
+            
+            const { text } = this.data[index];
+            
             this._activeLine = index;
             this._onSync(index, text);
         }
 
         on(event, callback) {
             if (typeof callback != "function") {
-                throw Error("Callback must be a function.");
+                throw Error("callback must be a function!");
             }
 
             switch (event) {
@@ -67,83 +152,6 @@
                     this._onSync = callback;
                     break;
             }
-        }
-
-        // Internal Methods
-
-        async _loadLyric(url) {
-            try {
-                const resp = await fetch(url);
-                return await resp.text();
-            } 
-            
-            catch (error) {
-                throw Error("Failed to load lrc file: " + error.message);
-            }
-        }
-
-        // find line index closest to given time
-        // i dont know the best way to do this.
-        _findLineIndex(time) {
-            const scores = [];
-
-            this._data.forEach((line) => {
-                const score = time - line.time;
-                if (score >= 0) scores.push(score);
-            });
-
-            if (scores.length == 0) return null;
-
-            const closest = Math.min.apply(Math, scores);
-            return scores.indexOf(closest);
-        }
-
-        // parse lyric text.
-        // info => lyric tags data
-        // data => lyric lines data contains time & text.
-        _parseLyric(text) {
-            const info_regex = /\[((?:al|ar|au|by|re|ti|ve|length|offset):.+)\]/i;
-            const data_regex = /\[(\d+:\d+(?:\.\d+))\](.*)/;
-
-            const lines = text.split("\n");
-
-            if (lines.length == 0) {
-                throw Error("Lyric is empty.");
-            }
-
-            lines.forEach((line) => {
-                const info = line.match(info_regex);
-                const data = line.match(data_regex);
-
-                if (info) {
-                    const prop = info[1].match(/(\w+):(.*)/);
-
-                    const name = prop[1];
-                    const value = prop[2];
-
-                    // store data to class property
-                    this._info[name] = value;
-                }
-
-                if (data) {
-                    const time = this._parseTime(data[1]);
-                    const text = data[2] || "";
-
-                    // store data to class property
-                    this._data.push({ time, text });
-                }
-            });
-        }
-
-        // parse formated time.
-        // "03:24.73" => 204.73 (total time in seconds)
-        _parseTime(time) {
-            const times = time.split(":");
-
-            const min = parseInt(times[0]) * 60;
-            const sec = parseFloat(times[1]);
-
-            return parseFloat((min + sec).toFixed(2));
         }
     }
 

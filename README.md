@@ -1,22 +1,22 @@
-# liricle
+# Liricle
 
-mini library to run & sync lrc file
+Mini library to run & sync [LRC file](https://en.m.wikipedia.org/wiki/LRC_(file_format)).
 
-[see demo](https://mcanam.github.io/liricle/)
+[✨ DEMO ✨](https://mcanam.github.io/liricle/)
 
-# install
+## Install
 
-npm
+NPM
 ``` bash
 npm install liricle
 ```
 
-cdn
+CDN
 ``` html
 https://cdn.jsdelivr.net/npm/liricle
 ```
 
-# usage
+## Usage
 
 ``` javascript
 // create liricle instance

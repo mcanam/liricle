@@ -3,56 +3,59 @@ import sync from "./sync.js";
 
 class Liricle {
     constructor() {
-        this.onInit = () => {};
-        this.onSync = () => {};
+        this._activeLine = null;
+        this._onInit = () => {};
+        this._onSync = () => {};
 
         this.info = {};
         this.data = [];
-
-        this.activeLine = null;
     }
 
     async init({ text, url }) {
         let lrc = text;
         
         if (url) {
-            const resp = await fetch(url);
-            const body = await resp.text();
+            try {
+                const resp = await fetch(url);
+                const body = await resp.text();
             
-            lrc = body;
-        } 
+                lrc = body;
+            }
+            
+            catch (error) { throw Error(error) }
+        }
         
         const { info, data } = parser(lrc);
         
         this.info = info;
         this.data = data;
         
-        this.onInit(info, data);
+        this._onInit(info, data);
     }
 
     sync(time, offset = 0) {
         const index = sync(this.data, time + offset);
-
+        
         if (index == null) return;
-        if (index == this.activeLine) return;
-
+        if (index == this._activeLine) return;
+        
         const { text } = this.data[index];
-
-        this.activeLine = index;
-        this.onSync(index, text);
+        
+        this._activeLine = index;
+        this._onSync(index, text);
     }
 
     on(event, callback) {
         if (typeof callback != "function") {
-            throw Error("Callback must be a function.");
+            throw Error("callback must be a function!");
         }
 
         switch (event) {
             case "init":
-                this.onInit = callback;
+                this._onInit = callback;
                 break;
             case "sync":
-                this.onSync = callback;
+                this._onSync = callback;
                 break;
         }
     }

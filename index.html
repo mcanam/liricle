@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>liricle</title>
+    <title>Liricle</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -31,7 +31,7 @@
     <div class="lyric">lyric will appear here...</div>
 
     <script src="dist/liricle.js"></script>
-    <script type="module">
+    <script>
         const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
 
         const $audio = document.querySelector(".audio");
@@ -40,25 +40,24 @@
         $audio.src = BASE_URL + "audio.mp3";
         
         //////////////////////////////////////////////////
-                
+          
         const liricle = new Liricle();
         
         liricle.init({ url: BASE_URL + "lyric.lrc" });
-        
+
         liricle.on("init", (info, data) => {
             console.log(info, data);
         });
         
         liricle.on("sync", (index, text) => {
-            // console.log(index, text);
             $lyric.innerText = text;
+            // console.log("=> line index: " + index + "\n" + "=> lyric text: " + text);
         });
         
         $audio.addEventListener("timeupdate", () => {
             const time = $audio.currentTime;
             liricle.sync(time, 0); // sync lyric
         });
-        
     </script>
 </body>
 
