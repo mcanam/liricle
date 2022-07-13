@@ -30,9 +30,13 @@
     <audio controls class="audio"></audio>
     <div class="lyric">lyric will appear here...</div>
 
-    <script src="dist/liricle.js"></script>
-    <script>
-        const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
+    <!-- <script src="src/parser.js"></script>
+    <script src="dist/liricle.js"></script> -->
+    <script type="module">
+        import Liricle from "./src/liricle.js";
+
+        // const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
+        const BASE_URL = "assets/";
 
         const $audio = document.querySelector(".audio");
         const $lyric = document.querySelector(".lyric");
@@ -45,8 +49,8 @@
         
         liricle.init({ url: BASE_URL + "lyric.lrc" });
 
-        liricle.on("init", (info, data) => {
-            console.log(info, data);
+        liricle.on("init", (data) => {
+            console.log(data);
         });
         
         liricle.on("sync", (index, text) => {
@@ -56,7 +60,7 @@
         
         $audio.addEventListener("timeupdate", () => {
             const time = $audio.currentTime;
-            liricle.sync(time, 0); // sync lyric
+            liricle.sync(time, -0.9); // sync lyric
         });
     </script>
 </body>

@@ -1,7 +1,9 @@
+// TODO: sync both words and lines
+
 function sync(data, time) {
     const scores = [];
     
-    data.forEach(line => {
+    data.lines.forEach(line => {
         // get gap or time distance
         const score = time - line.time;
         if (score >= 0) scores.push(score);

@@ -7,8 +7,7 @@ class Liricle {
         this._onInit = () => {};
         this._onSync = () => {};
 
-        this.info = {};
-        this.data = [];
+        this.data = null;
     }
 
     async init({ text, url }) {
@@ -25,12 +24,8 @@ class Liricle {
             catch (error) { throw Error(error) }
         }
         
-        const { info, data } = parser(lrc);
-        
-        this.info = info;
-        this.data = data;
-        
-        this._onInit(info, data);
+        this.data = parser(lrc);
+        this._onInit(this.data);
     }
 
     sync(time, offset = 0) {
