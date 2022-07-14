@@ -3,16 +3,18 @@ import sync from "./sync.js";
 
 class Liricle {
       constructor() {
-            this._activeLine = null;
-            this._onInit = () => {};
-            this._onSync = () => {};
+            this.activeLine = null;
+            this.onInit = () => {};
+            this.onSync = () => {};
 
             this.data = null;
       }
 
       /**
-       * 
-       * @param {*} param0 
+       * initialize Liricle
+       * @param {Object} options
+       * @param {string} options.text - LRC text
+       * @param {string} options.url - LRC file url
        */
       async init({ text, url }) {
             let lrc = text;
@@ -29,36 +31,34 @@ class Liricle {
             }
 
             this.data = parser(lrc);
-            this._onInit(this.data);
+            this.onInit(this.data);
       }
 
       /**
-       * 
-       * @param {*} time 
-       * @param {*} offset 
+       * sync lyric with current time
+       * @param {number} time - currrent time from audio player or something in seconds
+       * @param {number} offset - lyric offset in seconds
        */
       sync(time, offset = 0) {
             const { line, word } = sync(this.data, time + offset);
-
-            // if not enhanced, event update only occurs if it 
+            
+            // if not emhanced, event update only occurs if it
             // reaches the next lyric instead of updating every second.
             if (!this.data.enhanced) {
-                  if (line.index == null ||
-                      line.index == this._activeLine
-                  ) return;
+                  if (line == null) return;
+                  if (line.index == this.activeLine) return;
 
-                  this._activeLine = line.index;
-                  return this._onSync(line, word);
+                  this.activeLine = line.index;
+                  return this.onSync(line, word);
             }
 
-            // simplify, i think it's not good if there are too many parameters.
-            this._onSync(line, word);
+            this.onSync(line, word);
       }
 
       /**
-       * 
-       * @param {*} event 
-       * @param {*} callback 
+       * add event listener
+       * @param {string} event - event name
+       * @param {function} callback - event callback
        */
       on(event, callback) {
             if (typeof callback != "function") {
@@ -67,10 +67,10 @@ class Liricle {
 
             switch (event) {
                   case "init":
-                        this._onInit = callback;
+                        this.onInit = callback;
                         break;
                   case "sync":
-                        this._onSync = callback;
+                        this.onSync = callback;
                         break;
             }
       }
