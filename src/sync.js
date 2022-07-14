@@ -24,7 +24,6 @@ function findLine(data, time) {
       const lines = data.lines;
       const index = getClosestIndex(lines, time);
 
-      // cause index == 0 is false
       return index != null ? { index, ...lines[index] } : null;
 }
 
@@ -38,7 +37,6 @@ function findWord(line, time) {
       const words = line.words;
       const index = getClosestIndex(words, time);
 
-      // cause index == 0 is false
       return index != null ? words[index] : null;
 }
 
