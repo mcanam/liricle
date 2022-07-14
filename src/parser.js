@@ -53,6 +53,7 @@ function parseTags(line) {
       const name = match[1];
       const value = match[2].trim();
 
+      // push data to output
       output.tags[name] = value;
 }
 
@@ -87,7 +88,7 @@ function parseWords(line) {
       if (match == null) return null;
 
       match.forEach((value) => {
-            // extract timestamp. "<00:00.00>."
+            // extract timestamp. "<00:00.00>"
             // i think it's easier than split them.
             const time = value.match(WORD_TIME_REGEX)[0];
 

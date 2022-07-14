@@ -1,3 +1,5 @@
+// TODO: sync both words and lines
+
 function sync(data, time) {
     const lineScores = [];
     

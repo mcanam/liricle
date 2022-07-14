@@ -73,7 +73,6 @@
         const liricle = new Liricle();
 
         liricle.init({ url: "assets/lyric-enhanced.lrc" });
-
         liricle.on("init", (data) => {
             console.log(data);
         });
@@ -101,7 +100,7 @@
 
         $audio.addEventListener("timeupdate", () => {
             const time = $audio.currentTime;
-            liricle.sync(time, 0); // sync lyric
+            liricle.sync(time, -0.9); // sync lyric
         });
     </script>
 </body>
