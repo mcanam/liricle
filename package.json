@@ -1,6 +1,6 @@
 {
     "name": "liricle",
-    "version": "2.1.0",
+    "version": "3.0.0",
     "description": "Mini library to run & sync LRC file",
     "main": "dist/liricle.min.js",
     "module": "src/liricle.js",
