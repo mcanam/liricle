@@ -87,9 +87,8 @@ liricle has 2 events `init` and `sync` that you can listen. for example, see the
 listen `init` event:
 
 ``` javascript
-liricle.on("init", (info, lines) => {
-      // info  => { Object } contain LRC tags info
-      // lines => [ Array ] contain the lyric line data { time, text, words }
+liricle.on("init", (data) => {
+      // data => { Object } contain parsed lrc data.
 });
 ```
 
