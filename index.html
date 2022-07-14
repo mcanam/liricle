@@ -15,13 +15,22 @@
             align-items: center;
         }
 
-        .lyric {
+        html {
             font-family: sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .lyric-word {
             font-size: 2rem;
             font-weight: bold;
-            line-height: 1.5;
-            text-align: center;
+            color: darkmagenta;
             margin-top: 20px;
+        }
+
+        .lyric-line {
+            margin-top: 10px;
+            opacity: 0.6;
         }
 
         .highlight {
@@ -39,7 +48,8 @@
 
 <body>
     <audio controls class="audio"></audio>
-    <div>
+    
+    <!-- <div>
         <div id="line1" class="lyric">
             <div id="hl-lyric1" class="highlight">מילה </div>
             <div id="reg-lyric1">ראשונה</div>
@@ -48,59 +58,70 @@
             <div id="hl-lyric2" class="highlight"></div>
             <div id="reg-lyric2">lyric will appear here...</div>
         </div>
-    </div>
+    </div> -->
 
-    <!-- <script src="src/parser.js"></script>
-    <script src="dist/liricle.js"></script> -->
+    <!-- just for testing :D -->
+    <div class="lyric-word">lyric word</div>
+    <div class="lyric-line">lyric line</div>
+
     <script type="module">
         import Liricle from "./src/liricle.js";
 
         const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
-        // const BASE_URL = "assets/";
 
         const $audio = document.querySelector(".audio");
-        const $hlLyric1 = document.querySelector("#hl-lyric1");
-        const $regLyric1 = document.querySelector("#reg-lyric1");
-        const $hlLyric2 = document.querySelector("#hl-lyric2");
-        const $regLyric2 = document.querySelector("#reg-lyric2");
-
-        var $emLyr = [{ hl: $hlLyric1, reg: $regLyric1 }, { hl: $hlLyric2, reg: $regLyric2 }];
+        const $lyric_line = document.querySelector(".lyric-line");
+        const $lyric_word = document.querySelector(".lyric-word");
+        // const $hlLyric1 = document.querySelector("#hl-lyric1");
+        // const $regLyric1 = document.querySelector("#reg-lyric1");
+        // const $hlLyric2 = document.querySelector("#hl-lyric2");
+        // const $regLyric2 = document.querySelector("#reg-lyric2");
+        // var $emLyr = [{ hl: $hlLyric1, reg: $regLyric1 }, { hl: $hlLyric2, reg: $regLyric2 }];
 
         $audio.src = BASE_URL + "audio.mp3";
 
-        //////////////////////////////////////////////////
-
         const liricle = new Liricle();
 
-        liricle.init({ url: "assets/lyric-enhanced.lrc" });
+        liricle.init({ 
+            url: "assets/lyric-enhanced.lrc" 
+        });
+
+        const $lines = [];
+
         liricle.on("init", (data) => {
             console.log(data);
         });
 
-        liricle.on("sync", (lineIndex, text, wordIndex, word, data) => {
-            const line = data.lines[lineIndex];
-            let hlText = "";
-            let regText = "";
-            let i = 0;
-            for (; i <= wordIndex; ++i) {
-                hlText += line.words[i].text + " ";
-            }
-            for (; i < line.words.length; ++i) {
-                regText += line.words[i].text + " ";
-            }
+        liricle.on("sync", (line, word) => {
+            console.log(line, word);
 
-            var elIdx = lineIndex % 2;
+            if (line) $lyric_line.innerText = line.text;
+            if (word) $lyric_word.innerText = word.text;
 
-            $emLyr[elIdx].hl.innerText = hlText;
-            $emLyr[elIdx].reg.innerText = regText;
-            $emLyr[1 - elIdx].hl.innerText = ""
-            $emLyr[1 - elIdx].reg.innerText = data.lines[lineIndex + 1].text;
+            // const line = data.lines[lineIndex];
+            // let hlText = "";
+            // let regText = "";
+            // let i = 0;
+
+            // for (; i <= wordIndex; ++i) {
+            //     hlText += line.words[i].text + " ";
+            // }
+            // for (; i < line.words.length; ++i) {
+            //     regText += line.words[i].text + " ";
+            // }
+
+            // var elIdx = lineIndex % 2;
+
+            // $emLyr[elIdx].hl.innerText = hlText;
+            // $emLyr[elIdx].reg.innerText = regText;
+            // $emLyr[1 - elIdx].hl.innerText = ""
+            // $emLyr[1 - elIdx].reg.innerText = data.lines[lineIndex + 1].text;
             // console.log("=> line index: " + index + "\n" + "=> lyric text: " + text);
         });
 
         $audio.addEventListener("timeupdate", () => {
             const time = $audio.currentTime;
-            liricle.sync(time, -0.9); // sync lyric
+            liricle.sync(time, 0.2); // dont forget to adjust the offset to get perfect timing.
         });
     </script>
 </body>
