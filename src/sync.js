@@ -37,7 +37,7 @@ function findWord(line, time) {
       const words = line.words;
       const index = getClosestIndex(words, time);
 
-      return index != null ? words[index] : null;
+      return index != null ? { index, ...words[index] } : null;
 }
 
 /**
