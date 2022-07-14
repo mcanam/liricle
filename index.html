@@ -35,8 +35,8 @@
     <script type="module">
         import Liricle from "./src/liricle.js";
 
-        // const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
-        const BASE_URL = "assets/";
+        const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
+        // const BASE_URL = "assets/";
 
         const $audio = document.querySelector(".audio");
         const $lyric = document.querySelector(".lyric");
@@ -47,7 +47,7 @@
           
         const liricle = new Liricle();
         
-        liricle.init({ url: BASE_URL + "lyric.lrc" });
+        liricle.init({ url: "assets/lyric-enhanced.lrc" });
 
         liricle.on("init", (data) => {
             console.log(data);
