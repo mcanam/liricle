@@ -16,8 +16,6 @@ const output = {
       enhanced: false,
 };
 
-let wordIndex = 0;
-
 /**
  * LRC parser
  * @param {string} lrc - LRC text
@@ -93,12 +91,9 @@ function parseWords(line) {
             const time = value.match(WORD_TIME_REGEX)[0];
 
             words.push({
-                  index: wordIndex,
                   time: convertTime(time),
                   text: extractText(value),
             });
-            
-            wordIndex += 1;
       });
 
       return words;
