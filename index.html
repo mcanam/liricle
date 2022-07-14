@@ -14,7 +14,7 @@
             flex-direction: column;
             align-items: center;
         }
-        
+
         .lyric {
             font-family: sans-serif;
             font-size: 2rem;
@@ -23,12 +23,32 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        .highlight {
+            color: darkmagenta;
+        }
+
+        #hl-lyric1,
+        #reg-lyric1,
+        #hl-lyric2,
+        #reg-lyric2 {
+            display: inline;
+        }
     </style>
 </head>
 
 <body>
     <audio controls class="audio"></audio>
-    <div class="lyric">lyric will appear here...</div>
+    <div>
+        <div id="line1" class="lyric">
+            <div id="hl-lyric1" class="highlight">מילה </div>
+            <div id="reg-lyric1">ראשונה</div>
+        </div>
+        <div id="line2" class="lyric">
+            <div id="hl-lyric2" class="highlight"></div>
+            <div id="reg-lyric2">lyric will appear here...</div>
+        </div>
+    </div>
 
     <!-- <script src="src/parser.js"></script>
     <script src="dist/liricle.js"></script> -->
@@ -39,25 +59,45 @@
         // const BASE_URL = "assets/";
 
         const $audio = document.querySelector(".audio");
-        const $lyric = document.querySelector(".lyric");
-        
-        $audio.src = BASE_URL + "audio.mp3";
-        
-        //////////////////////////////////////////////////
-          
-        const liricle = new Liricle();
-        
-        liricle.init({ url: "assets/lyric-enhanced.lrc" });
+        const $hlLyric1 = document.querySelector("#hl-lyric1");
+        const $regLyric1 = document.querySelector("#reg-lyric1");
+        const $hlLyric2 = document.querySelector("#hl-lyric2");
+        const $regLyric2 = document.querySelector("#reg-lyric2");
 
+        var $emLyr = [{ hl: $hlLyric1, reg: $regLyric1 }, { hl: $hlLyric2, reg: $regLyric2 }];
+
+        $audio.src = BASE_URL + "audio.mp3";
+
+        //////////////////////////////////////////////////
+
+        const liricle = new Liricle();
+
+        liricle.init({ url: "assets/lyric-enhanced.lrc" });
         liricle.on("init", (data) => {
             console.log(data);
         });
-        
-        liricle.on("sync", (index, text) => {
-            $lyric.innerText = text;
+
+        liricle.on("sync", (lineIndex, text, wordIndex, word, data) => {
+            const line = data.lines[lineIndex];
+            let hlText = "";
+            let regText = "";
+            let i = 0;
+            for (; i <= wordIndex; ++i) {
+                hlText += line.words[i].text + " ";
+            }
+            for (; i < line.words.length; ++i) {
+                regText += line.words[i].text + " ";
+            }
+
+            var elIdx = lineIndex % 2;
+
+            $emLyr[elIdx].hl.innerText = hlText;
+            $emLyr[elIdx].reg.innerText = regText;
+            $emLyr[1 - elIdx].hl.innerText = ""
+            $emLyr[1 - elIdx].reg.innerText = data.lines[lineIndex + 1].text;
             // console.log("=> line index: " + index + "\n" + "=> lyric text: " + text);
         });
-        
+
         $audio.addEventListener("timeupdate", () => {
             const time = $audio.currentTime;
             liricle.sync(time, -0.9); // sync lyric
