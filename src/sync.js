@@ -35,6 +35,10 @@ function findLine(data, time) {
  */
 function findWord(line, time) {
       const words = line.words;
+
+      // hanlde if line not contain timed words.
+      if (words == null) return null;
+
       const index = getClosestIndex(words, time);
 
       return index != null ? { index, ...words[index] } : null;
