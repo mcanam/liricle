@@ -2,7 +2,7 @@
 
 liricle is javascript library for syncing timed lyrics with song. 
 
-you can see the demo here
+you can see the demo [here](https://mcanam.github.io/liricle/)
 
 > liricle now supports enhanced lrc format
 
@@ -143,4 +143,4 @@ both **line** and **word** objects contain:
 
 ### Example
 
-for a complete example you can check the `example folder` in this repo.
+for a complete example you can check the [example folder](https://github.com/mcanam/liricle/tree/main/example).
