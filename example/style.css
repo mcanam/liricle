@@ -23,3 +23,21 @@ html {
       margin-top: 10px;
       opacity: 0.6;
 }
+
+.line {
+    font: 32pt serif;
+    color: white;
+    text-shadow: 0 0 2pt black, 0 0 2pt black, 0 0 2pt black;
+    position:relative;
+    height: 2em;
+}
+
+.hl {
+    top: 0;
+    position: absolute;
+    color: limegreen;
+    width: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+}

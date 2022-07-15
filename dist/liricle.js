@@ -263,13 +263,14 @@
              * @param {number} time - currrent time from audio player or something in seconds
              * @param {number} offset - lyric offset in seconds
              */
-            sync(time, offset = 0) {
+            sync(time, offset = 0, continuous = false) {
                   const { line, word } = sync(this.data, time + offset);
                   
                   if (line == null && word == null) return;
 
                   if (this.data.enhanced && word != null) {
                         if (
+                              continuous == false &&
                               line.index == this.activeLine &&
                               word.index == this.activeWord
                         ) return;
@@ -279,7 +280,11 @@
                   }
 
                   else {
-                        if (line.index == this.activeLine) return;
+                        if (
+                              continuous == false &&
+                              line.index == this.activeLine
+                        ) return;
+                        
                         this.activeLine = line.index;
                   }
 
