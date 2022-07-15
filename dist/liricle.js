@@ -1,7 +1,7 @@
 
 /*!
  * liricle v3.0.0
- * Mini library to run & sync LRC file
+ * javascript lyric synchronizer library
  * https://github.com/mcanam/liricle
  * MIT license by mcanam
  */
