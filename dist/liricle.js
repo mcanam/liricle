@@ -2,7 +2,7 @@
 /*!
  * liricle v3.0.0
  * Mini library to run & sync LRC file
- * https://github.com/mcanam/liricle#readme
+ * https://github.com/mcanam/liricle
  * MIT license by mcanam
  */
 
@@ -29,8 +29,6 @@
             tags: {},
             enhanced: false,
       };
-
-      let wordIndex = 0;
 
       /**
        * LRC parser
@@ -107,12 +105,9 @@
                   const time = value.match(WORD_TIME_REGEX)[0];
 
                   words.push({
-                        index: wordIndex,
                         time: convertTime(time),
                         text: extractText(value),
                   });
-                  
-                  wordIndex += 1;
             });
 
             return words;
@@ -194,9 +189,13 @@
        */
       function findWord(line, time) {
             const words = line.words;
+
+            // hanlde if line not contain timed words.
+            if (words == null) return null;
+
             const index = getClosestIndex(words, time);
 
-            return index != null ? words[index] : null;
+            return index != null ? { index, ...words[index] } : null;
       }
 
       /**
@@ -227,16 +226,19 @@
 
       class Liricle {
             constructor() {
-                  this._activeLine = null;
-                  this._onInit = () => {};
-                  this._onSync = () => {};
+                  this.activeLine = null;
+                  this.activeWord = null;
+                  this.onInit = () => {};
+                  this.onSync = () => {};
 
                   this.data = null;
             }
 
             /**
-             * 
-             * @param {*} param0 
+             * initialize Liricle
+             * @param {Object} options
+             * @param {string} options.text - LRC text
+             * @param {string} options.url - LRC file url
              */
             async init({ text, url }) {
                   let lrc = text;
@@ -253,36 +255,41 @@
                   }
 
                   this.data = parser(lrc);
-                  this._onInit(this.data);
+                  this.onInit(this.data);
             }
 
             /**
-             * 
-             * @param {*} time 
-             * @param {*} offset 
+             * sync lyric with current time
+             * @param {number} time - currrent time from audio player or something in seconds
+             * @param {number} offset - lyric offset in seconds
              */
             sync(time, offset = 0) {
                   const { line, word } = sync(this.data, time + offset);
+                  
+                  if (line == null && word == null) return;
 
-                  // if not enhanced, event update only occurs if it 
-                  // reaches the next lyric instead of updating every second.
-                  if (!this.data.enhanced) {
-                        if (line.index == null ||
-                            line.index == this._activeLine
+                  if (this.data.enhanced && word != null) {
+                        if (
+                              line.index == this.activeLine &&
+                              word.index == this.activeWord
                         ) return;
 
-                        this._activeLine = line.index;
-                        return this._onSync(line, word);
+                        this.activeLine = line.index;
+                        this.activeWord = word.index;
                   }
 
-                  // simplify, i think it's not good if there are too many parameters.
-                  this._onSync(line, word);
+                  else {
+                        if (line.index == this.activeLine) return;
+                        this.activeLine = line.index;
+                  }
+
+                  this.onSync(line, word);
             }
 
             /**
-             * 
-             * @param {*} event 
-             * @param {*} callback 
+             * add event listener
+             * @param {string} event - event name
+             * @param {function} callback - event callback
              */
             on(event, callback) {
                   if (typeof callback != "function") {
@@ -291,10 +298,10 @@
 
                   switch (event) {
                         case "init":
-                              this._onInit = callback;
+                              this.onInit = callback;
                               break;
                         case "sync":
-                              this._onSync = callback;
+                              this.onSync = callback;
                               break;
                   }
             }
