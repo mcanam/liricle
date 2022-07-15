@@ -4,6 +4,7 @@ import sync from "./sync.js";
 class Liricle {
       constructor() {
             this.activeLine = null;
+            this.activeWord = null;
             this.onInit = () => {};
             this.onSync = () => {};
 
@@ -42,14 +43,21 @@ class Liricle {
       sync(time, offset = 0) {
             const { line, word } = sync(this.data, time + offset);
             
-            // if not emhanced, event update only occurs if it
-            // reaches the next lyric instead of updating every second.
-            if (!this.data.enhanced) {
-                  if (line == null) return;
-                  if (line.index == this.activeLine) return;
+            if (line == null && word == null) return;
+
+            if (this.data.enhanced && word != null) {
+                  if (
+                        line.index == this.activeLine &&
+                        word.index == this.activeWord
+                  ) return;
 
                   this.activeLine = line.index;
-                  return this.onSync(line, word);
+                  this.activeWord = word.index;
+            }
+
+            else {
+                  if (line.index == this.activeLine) return;
+                  this.activeLine = line.index;
             }
 
             this.onSync(line, word);
