@@ -17,13 +17,14 @@ export default {
             file: "dist/liricle.js",
             format: "umd",
             banner: header,
-            name: "Liricle"
+            name: "Liricle",
         },
         {
             file: "dist/liricle.min.js",
             format: "umd",
             banner: header,
             name: "Liricle",
+            sourcemap: true,
             plugins: [
                 terser({ toplevel: true })
             ]

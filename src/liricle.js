@@ -2,63 +2,86 @@ import parser from "./parser.js";
 import sync from "./sync.js";
 
 class Liricle {
-    constructor() {
-        this._activeLine = null;
-        this._onInit = () => {};
-        this._onSync = () => {};
+      constructor() {
+            this.activeLine = null;
+            this.activeWord = null;
+            this.onInit = () => {};
+            this.onSync = () => {};
 
-        this.info = {};
-        this.data = [];
-    }
+            this.data = null;
+      }
 
-    async init({ text, url }) {
-        let lrc = text;
-        
-        if (url) {
-            try {
-                const resp = await fetch(url);
-                const body = await resp.text();
-            
-                lrc = body;
+      /**
+       * initialize Liricle
+       * @param {Object} options
+       * @param {string} options.text - LRC text
+       * @param {string} options.url - LRC file url
+       */
+      async init({ text, url }) {
+            let lrc = text;
+
+            if (url) {
+                  try {
+                        const resp = await fetch(url);
+                        const body = await resp.text();
+
+                        lrc = body;
+                  } 
+                  
+                  catch (error) { throw Error(error) }
             }
+
+            this.data = parser(lrc);
+            this.onInit(this.data);
+      }
+
+      /**
+       * sync lyric with current time
+       * @param {number} time - currrent time from audio player or something in seconds
+       * @param {number} offset - lyric offset in seconds
+       */
+      sync(time, offset = 0) {
+            const { line, word } = sync(this.data, time + offset);
             
-            catch (error) { throw Error(error) }
-        }
-        
-        const { info, data } = parser(lrc);
-        
-        this.info = info;
-        this.data = data;
-        
-        this._onInit(info, data);
-    }
+            if (line == null && word == null) return;
 
-    sync(time, offset = 0) {
-        const index = sync(this.data, time + offset);
-        
-        if (index == null) return;
-        if (index == this._activeLine) return;
-        
-        const { text } = this.data[index];
-        
-        this._activeLine = index;
-        this._onSync(index, text);
-    }
+            if (this.data.enhanced && word != null) {
+                  if (
+                        line.index == this.activeLine &&
+                        word.index == this.activeWord
+                  ) return;
 
-    on(event, callback) {
-        if (typeof callback != "function") {
-            throw Error("callback must be a function!");
-        }
+                  this.activeLine = line.index;
+                  this.activeWord = word.index;
+            }
 
-        switch (event) {
-            case "init":
-                this._onInit = callback;
-                break;
-            case "sync":
-                this._onSync = callback;
-                break;
-        }
-    }
+            else {
+                  if (line.index == this.activeLine) return;
+                  this.activeLine = line.index;
+            }
+
+            this.onSync(line, word);
+      }
+
+      /**
+       * add event listener
+       * @param {string} event - event name
+       * @param {function} callback - event callback
+       */
+      on(event, callback) {
+            if (typeof callback != "function") {
+                  throw Error("callback must be a function!");
+            }
+
+            switch (event) {
+                  case "init":
+                        this.onInit = callback;
+                        break;
+                  case "sync":
+                        this.onSync = callback;
+                        break;
+            }
+      }
 }
 
 export default Liricle;

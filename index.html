@@ -1,64 +1,179 @@
+<!-- THIS IS FOR DEVELOPMENT ONLY -->
+<!-- THIS IS FOR DEVELOPMENT ONLY -->
+<!-- THIS IS FOR DEVELOPMENT ONLY -->
+<!-- THIS IS FOR DEVELOPMENT ONLY -->
+<!-- THIS IS FOR DEVELOPMENT ONLY -->
+
 <!DOCTYPE html>
 <html lang="en">
+      <head>
+            <title>Liricle Development</title>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                  * { box-sizing: border-box }
+                  
+                  body {
+                        width: 100vw; height: 100vh;
+                        margin: 0; display: flex;
+                  }
 
-<head>
-    <title>Liricle</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <style>
-        body {
-            box-sizing: border-box;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .lyric {
-            font-family: sans-serif;
-            font-size: 2rem;
-            font-weight: bold;
-            line-height: 1.5;
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
-</head>
+                  html { font: 16px/1.5 sans-serif }
 
-<body>
-    <audio controls class="audio"></audio>
-    <div class="lyric">lyric will appear here...</div>
+                  .panel {
+                        padding: 20px;
+                        height: 100vh;
+                        display: flex; flex-direction: column;
+                        border: 1px solid currentColor;
+                  }
 
-    <script src="dist/liricle.js"></script>
-    <script>
-        const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
+                  .panel.left { width: 25%; }
+                  .panel.right { width: 75%; }
 
-        const $audio = document.querySelector(".audio");
-        const $lyric = document.querySelector(".lyric");
-        
-        $audio.src = BASE_URL + "audio.mp3";
-        
-        //////////////////////////////////////////////////
-          
-        const liricle = new Liricle();
-        
-        liricle.init({ url: BASE_URL + "lyric.lrc" });
+                  .lyric-line {
+                        margin-bottom: 10px;
+                  }
 
-        liricle.on("init", (info, data) => {
-            console.log(info, data);
-        });
-        
-        liricle.on("sync", (index, text) => {
-            $lyric.innerText = text;
-            // console.log("=> line index: " + index + "\n" + "=> lyric text: " + text);
-        });
-        
-        $audio.addEventListener("timeupdate", () => {
-            const time = $audio.currentTime;
-            liricle.sync(time, 0); // sync lyric
-        });
-    </script>
-</body>
+                  .lyric-line.active {
+                        color: brown;
+                  }
+            </style>
+      </head>
+      <body>
 
+            <div class="panel left">
+                  <div>
+                        <div>lyric offset</div>
+                        <input type="number" id="$offset" step="0.1" value="-0.2">
+                  </div>
+                  <br>
+                  <div>
+                        <div>load audio</div>
+                        <input type="file" id="$file_audio">
+                  </div>
+                  <br>
+                  <div>
+                        <div>load lyric</div>
+                        <input type="file" id="$file_lyric">
+                  </div>
+                  <br>
+                  <div>=======</div>
+                  <br>
+                  <div>current line index: <span id="$info_curr_line">0</span></div>
+                  <br>
+                  <div>current word index: <span id="$info_curr_word">0</span></div>
+                  <br>
+                  <div>LRC is enhanced: <span id="$info_enhanced">false</span></div>
+            </div>
+
+            <div class="panel right">
+                  <div style="position: relative; width: 100%; flex-grow: 1; overflow: auto;">
+                        <div id="$lrc_cursor" style="position: absolute; z-index: -1; width: 0px; height: 1rem; background: rgb(185, 230, 248); border-bottom: 2px solid rgb(0, 144, 201);"></div>
+                        <div id="$lrc_container"></div>
+                  </div>
+                  
+                  <audio id="$audio" controls style="width: 100%; height: 100px; margin-top: 20px"></audio>
+            </div>
+
+            <script type="module">
+                  import Liricle from "./src/liricle.js";
+
+                  let offset = 0.2;
+
+                  const url = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
+                  const liricle = new Liricle();
+
+                  const $lines = [];
+                  let $activeLine = null;
+
+                  $offset.oninput = () => {
+                        offset = parseInt($offset.value);
+                        $audio.pause();
+                        $audio.play();
+                        console.log("offset changed", offset);
+                  };
+
+                  $audio.src = url + "audio.mp3";
+                  
+                  $audio.ontimeupdate = () => {
+                        const time = $audio.currentTime;
+                        liricle.sync(time, offset);
+                  };
+
+                  $file_audio.onchange = () => {
+                        const reader = new FileReader();
+
+                        reader.onload = () => {
+                              $audio.src = reader.result;
+                        }
+
+                        reader.readAsDataURL($file_audio.files[0]);
+                  };
+
+                  $file_lyric.onchange = () => {
+                        const reader = new FileReader();
+
+                        reader.onload = () => {
+                              liricle.init({ text: reader.result });
+                        }
+
+                        reader.readAsText($file_lyric.files[0]);
+                  };
+
+                  liricle.init({ url: url + "lyric-enhanced.lrc" });
+
+                  liricle.on("init", ({ tags, lines, enhanced }) => {
+                        console.log("init");
+                        $info_enhanced.innerText = enhanced;
+
+                        lines.forEach((line, index) => {
+                              const $line = document.createElement("div");
+
+                              $line.dataset.index = index;
+                              $line.className = "lyric-line";
+
+                              if (line.words == null) {
+                                    $line.innerText = line.text;
+                                    return $lines.push($line);
+                              }
+
+                              line.words.forEach(word=> {
+                                    const $word = document.createElement("span");
+
+                                    $word.className = "lyric-word";
+                                    $word.innerText = word.text + " ";
+
+                                    $line.append($word);
+                              });
+
+                              $lines.push($line);
+                        });
+
+                        $lrc_container.append(...$lines);
+                  });
+
+                  liricle.on("sync", (line, word) => {
+                        if ($activeLine) {
+                              $activeLine.classList.remove("active");
+                        }
+
+                        $activeLine = $lines[line.index];
+                        $activeLine.classList.add("active");
+
+                        $info_curr_line.innerText = line.index;
+
+                        if (word) {
+                              const $word = $activeLine.children[word.index];
+
+                              $lrc_cursor.style.width = $word.offsetWidth + "px";
+                              $lrc_cursor.style.top = $word.offsetTop + "px";
+                              $lrc_cursor.style.left = $word.offsetLeft + "px";
+
+                              $info_curr_word.innerText = word.index;
+                        }
+                  });
+
+            </script>
+      </body>
 </html>
