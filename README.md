@@ -72,17 +72,17 @@ this method has 2 parameters:
 
 - **time**: current time from audio player or something else in seconds.
 
-  - required: `yes`
+  - **required:** `yes`
 
-  - type: `number` 
+  - **type**: `number` 
 
 - **offset**: the lyric offset in seconds (optional). this is used to set the lyric speed.
 
-  - required: `no`
+  - **required:** `no`
 
-  - type: `number`
+  - **type**: `number`
 
-  - default: `0`
+  - **default**: `0`
 
 ### Listen to event
 
@@ -108,19 +108,19 @@ liricle.on("init", (data) => {
 });
 ```
 
-callback function will receive a object called `data` that contain:
+callback function will receive a `object` called **data** that contain:
 
 - **tags** `Object`: key-value pair of lyric tags info
 
-- **lines** `Array`: list of lyric line object:
+- **lines** `Array`: array of lyric line object that contain:
 
   - **time** `number`: lyric line time in seconds
 
   - **text** `string`: lyric line text
 
-  - **words** `Array|null`: contains every word of the lyric line if the lrc is enhanced. otherwise null
+  - **words** `Array`: every word of the lyric line if the lrc is enhanced. otherwise `null`
 
-- **enhanced** `Boolean`: lrc format is enhanced or not
+- **enhanced** `boolean`: lrc format is enhanced or not
 
 listen sync event:
 
@@ -130,7 +130,10 @@ liricle.on("sync", (line, word) => {
 });
 ```
 
-callback function will receive 2 arguments called `line` and `word` both are `objects` that contain: 
+callback function will receive 2 arguments called **line** and **word**.  \
+both can be `object` or `null` if none of the lyrics match the time. so always check the value.
+
+both **line** and **word** objects contain:
 
 - **index** `number`: current line or word index
 
@@ -138,3 +141,6 @@ callback function will receive 2 arguments called `line` and `word` both are `ob
 
 - **time** `number`: current lyric time
 
+### Example
+
+for a complete example you can check the `example folder` in this repo.
