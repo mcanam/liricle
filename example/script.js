@@ -64,8 +64,11 @@ liricle.on("sync", (line, word) => {
         let words = lyrics_data.lines[line.index].words;
         let last_word_time = words[words.length - 1].time;
         let total_line_time = last_word_time - line.time;
+        if (total_line_time == 0 && next_line) {
+            total_line_time = next_line.time - line.time;
+        }
 
-        let fill_width = (total_fill_time / total_line_time) * em_curr_line.children[0].offsetWidth;
+        let fill_width = Math.min(1, total_fill_time / total_line_time) * em_curr_line.children[0].offsetWidth;
 
         em_curr_line.children[1].style = "width: "+ fill_width + "px";
     }
@@ -78,7 +81,28 @@ liricle.on("sync", (line, word) => {
 const offset = 0.2; // value in seconds.
 
 // listen to the audio player when the time is updated.
-$audio.addEventListener("timeupdate", () => {
+// $audio.addEventListener("timeupdate", () => {
+//     const time = $audio.currentTime;
+//     liricle.sync(time, offset, true); // <= sync lyric
+// });
+let stillPlaying = false;
+
+function sync(timestamp){
+    if (stillPlaying == false) return;
     const time = $audio.currentTime;
     liricle.sync(time, offset, true); // <= sync lyric
+    requestAnimationFrame(sync);
+}
+
+$audio.addEventListener("play", (e) => {
+    stillPlaying = true;
+    requestAnimationFrame(sync);
+});
+
+$audio.addEventListener("pause", (e) => {
+    stillPlaying = false;
+});
+
+$audio.addEventListener("ended", (e) => {
+    stillPlaying = false;
 });
