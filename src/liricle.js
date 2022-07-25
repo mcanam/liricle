@@ -17,10 +17,10 @@ export default class Liricle {
        * @param {string} options.text - lrc text
        * @param {string} options.url - lrc file url
        */
-      async init({ text, url }) {            
-            if (url) {
+      async init(options) {            
+            if (options && options.url) {
                   try {
-                        const resp = await fetch(url);
+                        const resp = await fetch(options.url);
 
                         if (!resp.ok) {
                               throw Error(`${resp.status} ${resp.statusText} (${resp.url})`);
@@ -35,8 +35,8 @@ export default class Liricle {
                   }
             } 
 
-            else if (text) {
-                  this.data = parser(text);
+            else if (options && options.text) {
+                  this.data = parser(options.text);
             } 
             
             else {
