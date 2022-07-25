@@ -25,9 +25,7 @@ export default {
             banner: header,
             name: "Liricle",
             sourcemap: true,
-            plugins: [
-                terser({ toplevel: true })
-            ]
+            plugins: [terser()]
         }
     ]
 }
