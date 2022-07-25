@@ -2,8 +2,6 @@ const BASE_URL = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-d
 
 // get DOM elements
 const $audio = document.querySelector(".audio");
-const $lyric_word = document.querySelector(".lyric-word");
-const $lyric_line = document.querySelector(".lyric-line");
 
 const $lyric_alternating_lines = document.querySelectorAll(".line");
 
@@ -33,8 +31,6 @@ liricle.on("sync", (line, word) => {
     console.log("current line => ", line);
     console.log("current word => ", word);
 
-    $lyric_line.innerText = line.text;
-
     let filling_line_index = line.index % 2;
    
     let em_curr_line = $lyric_alternating_lines[filling_line_index];
@@ -57,8 +53,6 @@ liricle.on("sync", (line, word) => {
 
     // please always check the word value before using it.
     if (word) {
-        $lyric_word.innerText = word.text;
-
         let total_fill_time = $audio.currentTime - line.time;
 
         let words = lyrics_data.lines[line.index].words;
