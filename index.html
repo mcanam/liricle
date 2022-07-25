@@ -65,6 +65,8 @@
                   <div>current word index: <span id="$info_curr_word">0</span></div>
                   <br>
                   <div>LRC is enhanced: <span id="$info_enhanced">false</span></div>
+                  <br>
+                  <div>current time: <span id="$info_time">00:00.00</span></div>
             </div>
 
             <div class="panel right">
@@ -99,6 +101,7 @@
                   $audio.ontimeupdate = () => {
                         const time = $audio.currentTime;
                         liricle.sync(time, offset);
+                        $info_time.innerText = timeToText(time);
                   };
 
                   $file_audio.onchange = () => {
@@ -173,6 +176,16 @@
                               $info_curr_word.innerText = word.index;
                         }
                   });
+
+                  function timeToText(time) {
+                        let min = Math.floor(time / 60);
+                        let sec = (time % 60).toFixed(2);
+
+                        min = min < 10 ? "0" + min : min;
+                        sec = sec < 10 ? "0" + sec : sec;
+
+                        return min + ":" + sec;
+                  }
 
             </script>
       </body>
