@@ -1,6 +1,6 @@
 
 /*!
- * liricle v3.0.0
+ * liricle v3.1.0
  * javascript lyric synchronizer library
  * https://github.com/mcanam/liricle
  * MIT license by mcanam
@@ -12,140 +12,153 @@
       (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Liricle = factory());
 })(this, (function () { 'use strict';
 
-      // will match: "[name:value]"
-      const TAGS_REGEX = /\[([a-z]+):(.+)\]/i;
+      // will match: "[tag:value]"
+      const TAGS_REGEX = /\[([a-z]+):(.*)\]/i;
 
-      // will match: "[00:00.00]" one or more.
-      const TIME_REGEX = /\[\d{2}:\d{2}(.\d{2,})?\]{1,}/g;
+      // will match: "<00:00.00> blablabla"
+      const WORD_REGEX = /<\d{2}:\d{2}(.\d{2,})?>\s*[^\s|<]*/g;
 
-      // will match: "<00:00.00> blablabla".
-      const WORD_REGEX = /(<\d{2}:\d{2}.\d{2,}>\s{0,}([^\s]+))/g;
+      // will match: "[00:00.00]"
+      const LINE_TIME_REGEX = /\[\d{2}:\d{2}(.\d{2,})?\]/g;
 
-      // only match: "<00:00.00>". mainly used to extract time.
-      const WORD_TIME_REGEX = /<\d{2}:\d{2}(.\d{2,})?>/;
-
-      const output = {
-            lines: [],
-            tags: {},
-            enhanced: false,
-      };
+      // will match: "<00:00.00>"
+      const WORD_TIME_REGEX = /<\d{2}:\d{2}(.\d{2,})?>/g;
 
       /**
-       * LRC parser
-       * @param {string} lrc - LRC text
-       * @returns {Object} output
+       * parse lrc to javascript object
+       * @param {string} text - lrc text
+       * @returns {Object} parsed data from lrc
        */
-      function parser(lrc) {
-            // check if the lrc file is enhanced or not
-            if (WORD_TIME_REGEX.test(lrc)) {
-                  output.enhanced = true;
-            }
-
-            const lines = lrc.split(/\r|\n/);
+      function parser(text) {
+            const lines = text.split(/\r?\n/);
+            
+            const output = {
+                  tags: {},
+                  lines: [],
+                  enhanced: isEnhanced(text)
+            };
 
             // parsing started
-            lines.forEach((line) => {
-                  parseTags(line);
-                  parseLine(line);
+            lines.forEach(value => {
+                  const tags = extractTags(value);
+                  const line = extractLine(value);
+
+                  if (tags) output.tags[tags.name] = tags.value;
+                  if (line) output.lines.push(...line);
             });
 
+            // if lrc has multiple time in the same line 
+            // parser will split them into individual lines 
+            // so we have to reorder them.
             output.lines = sortLines(output.lines);
+
             return output;
       }
 
       /**
-       * parse tags data from LRC file
-       * @param {string} line - LRC line
+       * extract tag data from lrc
+       * @param {string} text - lrc line
+       * @return {(Object|undefined)} extrated tag object or undefined
        */
-      function parseTags(line) {
-            const match = line.match(TAGS_REGEX);
+       function extractTags(text) {
+            const tags = text.match(TAGS_REGEX);
 
-            if (match == null) return;
+            if (!tags) return;
 
-            const name = match[1];
-            const value = match[2].trim();
-
-            // push data to output
-            output.tags[name] = value;
+            return { 
+                  name: tags[1], 
+                  value: tags[2].trim() 
+            };
       }
 
       /**
-       * parse line from LRC file
-       * @param {string} line - LRC line
+       * extract time, text and words from lrc
+       * @param {string} line - lrc line
+       * @return {(Array|undefined)} array that contains lrc line object or undefined
        */
-      function parseLine(line) {
-            const match = line.match(TIME_REGEX);
+       function extractLine(line) {
+            const times = line.match(LINE_TIME_REGEX);
+            const bucket = [];
 
-            if (match == null) return;
+            if (!times) return;
 
-            match.forEach((value) => {
-                  // push data to output
-                  output.lines.push({
-                        time: convertTime(value),
+            times.forEach(value => {
+                  bucket.push({
+                        time: extractTime(value),
                         text: extractText(line),
-                        words: parseWords(line)
+                        words: extractWords(line),
                   });
             });
+
+            return bucket;
       }
 
       /**
-       * parse words from enhanced LRC
-       * @param {string} line - LRC line
-       * @returns {Array} parsed words
+       * extract time from lrc line and convert to seconds
+       * @param {string} line - time string "[mm:ss.xx]"
+       * @returns {number} extracted time number in seconds
        */
-      function parseWords(line) {
-            const match = line.match(WORD_REGEX);
-            const words = [];
+       function extractTime(line) {
+            let time = line.replace(/\[|\]|<|>/g, "");
+            time = convertTime(time);
 
-            if (match == null) return null;
+            return time;
+      }
 
-            match.forEach((value) => {
-                  // extract timestamp. "<00:00.00>"
-                  // i think it's easier than split them.
+      /**
+       * extract words from lrc line
+       * @param {string} line - lrc line
+       * @returns {(Array|null)} extracted words or null
+       */
+       function extractWords(line) {
+            const words = line.match(WORD_REGEX);
+            const bucket = [];
+
+            if (!words) return null;
+
+            words.forEach(value => {
+                  // extract timestamp "<00:00.00>" with regex
+                  // i think it's easier than split them
                   const time = value.match(WORD_TIME_REGEX)[0];
 
-                  words.push({
-                        time: convertTime(time),
+                  bucket.push({
+                        time: extractTime(time),
                         text: extractText(value),
                   });
             });
 
-            return words;
+            return bucket;
       }
 
       /**
-       * extract text / lyric from timed line
-       * @param {string} line - LRC line
+       * extract text from lrc line
+       * @param {string} line - lrc line
        * @returns {string} extracted text
        */
        function extractText(line) {
-            // remove timestamp
-            line = line.replace(TIME_REGEX, "");
-            line = line.replace(WORD_REGEX, "$2");
+            let text = line.replace(LINE_TIME_REGEX, "");
+            text = text.replace(WORD_TIME_REGEX, "");
 
-            return line.trim();
+            return text.trim();
       }
 
       /**
-       * convert "[03:24.73]" => 204.73 (total time in seconds)
-       * @param {string} time - string time "[mm:ss.xx]" or "<mm:ss.xx>"
+       * convert "[03:24.73]" to 204.73 (total time in seconds)
+       * @param {string} time - time string "mm:ss.xx"
        * @returns {number} total time in seconds
        */
-      function convertTime(time) {
-            time = time.replace(/\[|\]|<|>/g, "");
-            time = time.split(":");
+       function convertTime(time) {
+            let [min, sec] = time.split(":");
 
-            let [min, sec] = time;
-
-            min = parseInt(min) * 60;
+            min = parseFloat(min) * 60;
             sec = parseFloat(sec);
 
             return min + sec;
       }
 
       /**
-       * sort lines from shortest to longest
-       * @param {Array} lines - parsed lines
+       * sort lines by time (shortest to longest)
+       * @param {Array} lines - parsed lrc lines
        * @returns {Array} sorted lines
        */
       function sortLines(lines) {
@@ -153,65 +166,77 @@
       }
 
       /**
-       * find closest lyric index from given time
+       * check the lrt format is enhanced or not
+       * @param {string} text - lrc text
+       * @returns {boolean} is enhanced?
+       */
+      function isEnhanced(text) {
+            return WORD_TIME_REGEX.test(text);
+      }
+
+      /**
+       * find closest lyric word and line from given time
        * @param {Object} data - output data from parser
-       * @param {number} time - currrent time from audio player or something in seconds
-       * @returns {Object} - the current lyric line and word
+       * @param {number} time - current time from audio player or something else
        */
       function sync(data, time) {
-            let line = findLine(data, time);
-            let word = line != null && data.enhanced ? findWord(line, time) : null;
+            let line = null;
+            let word = null;
 
-            // delete words property from line
-            if (line != null) delete line.words;
+            const lines = data.lines;
+            line = findLine(lines, time);
+
+            if (line != null && data.enhanced) {
+                  const words = line.words;
+                  word = findWord(words, time);
+
+                  // delete 'words' property from line
+                  // because we don't need it anymore.
+                  delete line.words;
+            }
 
             return { line, word };
       }
 
       /**
-       * find closest line
-       * @param {Object} data 
-       * @param {number} time - currrent time
-       * @returns {Object|null}
+       * find closest lyric line
+       * @param {Array} lines - array that contains lyric lines
+       * @param {number} time - time argument of the sync function
+       * @returns {(Object|null)} closest lyric line or null
        */
-      function findLine(data, time) {
-            const lines = data.lines;
+      function findLine(lines, time) {
             const index = getClosestIndex(lines, time);
-
             return index != null ? { index, ...lines[index] } : null;
       }
 
       /**
-       * find closest word
-       * @param {Object} line 
-       * @param {number} time - currrent time
-       * @returns {Object|null}
+       * find closest lyric word
+       * @param {Array} words - array that contains lyric words
+       * @param {number} time - time argument of the sync function
+       * @returns {(Object|null)} closest lyric word or null
        */
-      function findWord(line, time) {
-            const words = line.words;
-
-            // hanlde if line not contain timed words.
-            if (words == null) return null;
+      function findWord(words, time) {
+            // if words are null, just return it.
+            if (words == null) return words;
 
             const index = getClosestIndex(words, time);
-
             return index != null ? { index, ...words[index] } : null;
       }
 
       /**
-       * find closest lyric index
-       * @param {Array} data 
-       * @param {number} time - currrent time 
-       * @returns {number|null} index of lyric
+       * 
+       * @param {Array} items - array that contains lyric words or lines
+       * @param {number} time - time argument of the sync function
+       * @returns {(number|null)} closest index of lyric or null
        */
-      function getClosestIndex(data, time) {
+      function getClosestIndex(items, time) {
             // to find the closest index we just need to subtract each line or word time with the given time
             // then put the value into an array and find the smallest positive value with Math.min()
             // after that we can find the index from smallest value in array with indexOf() method.
 
             const scores = [];
 
-            data.forEach((item) => {
+            items.forEach(item => {
                   const score = time - item.time;
                   if (score >= 0) scores.push(score);
             });
@@ -225,45 +250,73 @@
       }
 
       class Liricle {
-            constructor() {
-                  this.activeLine = null;
-                  this.activeWord = null;
-                  this.onInit = () => {};
-                  this.onSync = () => {};
+            #activeLine = null;
+            #activeWord = null;
+            #onInit = () => {};
+            #onSync = () => {};
 
+            constructor() {
                   this.data = null;
             }
 
             /**
              * initialize Liricle
              * @param {Object} options
-             * @param {string} options.text - LRC text
-             * @param {string} options.url - LRC file url
+             * @param {string} options.text - lrc text
+             * @param {string} options.url - lrc file url
              */
-            async init({ text, url }) {
-                  let lrc = text;
-
+            async init({ text, url }) {            
                   if (url) {
                         try {
                               const resp = await fetch(url);
-                              const body = await resp.text();
 
-                              lrc = body;
+                              if (!resp.ok) {
+                                    throw Error(`${resp.status} ${resp.statusText} (${resp.url})`);
+                              }
+
+                              const body = await resp.text();
+                              this.data = parser(body);
                         } 
                         
-                        catch (error) { throw Error(error) }
-                  }
+                        catch (error) {
+                              throw Error(`Liricle.init(): ${error.message}`);
+                        }
+                  } 
 
-                  this.data = parser(lrc);
-                  this.onInit(this.data);
+                  else if (text) {
+                        this.data = parser(text);
+                  } 
+                  
+                  else {
+                        throw Error(`Liricle.init(): missing argument`);
+                  }
+                  
+                  this.#onInit(this.data);
             }
 
             /**
              * sync lyric with current time
-             * @param {number} time - currrent time from audio player or something in seconds
+             * @param {number} time - currrent time from audio player or something else in seconds
              * @param {number} offset - lyric offset in seconds
+             * @param {boolean} continuous - always emit sync event 
              */
             sync(time, offset = 0, continuous = false) {
+                  if (time == undefined) {
+                        throw Error("Liricle.sync(): missing 'time' argument");
+                  }
+
+                  if (typeof time != "number") {
+                        throw Error("Liricle.sync(): 'time' argument must be a number!");
+                  }
+
+                  if (typeof offset != "number") {
+                        throw Error("Liricle.sync(): 'offset' argument must be a number!");
+                  }
+
+                  if (typeof continuous != "boolean") {
+                        throw Error("Liricle.sync(): 'continuous' argument must be a boolean!");
+                  }
+
                   const { line, word } = sync(this.data, time + offset);
                   
                   if (line == null && word == null) return;
@@ -271,42 +324,42 @@
                   if (this.data.enhanced && word != null) {
                         if (
                               continuous == false &&
-                              line.index == this.activeLine &&
-                              word.index == this.activeWord
+                              line.index == this.#activeLine &&
+                              word.index == this.#activeWord
                         ) return;
 
-                        this.activeLine = line.index;
-                        this.activeWord = word.index;
+                        this.#activeLine = line.index;
+                        this.#activeWord = word.index;
                   }
 
                   else {
                         if (
                               continuous == false &&
-                              line.index == this.activeLine
+                              line.index == this.#activeLine
                         ) return;
                         
-                        this.activeLine = line.index;
+                        this.#activeLine = line.index;
                   }
 
-                  this.onSync(line, word);
+                  this.#onSync(line, word);
             }
 
             /**
-             * add event listener
+             * listen to lyricle event
              * @param {string} event - event name
              * @param {function} callback - event callback
              */
             on(event, callback) {
                   if (typeof callback != "function") {
-                        throw Error("callback must be a function!");
+                        throw Error("Liricle.on(): 'callback' argument must be a function!");
                   }
 
                   switch (event) {
                         case "init":
-                              this.onInit = callback;
+                              this.#onInit = callback;
                               break;
                         case "sync":
-                              this.onSync = callback;
+                              this.#onSync = callback;
                               break;
                   }
             }
