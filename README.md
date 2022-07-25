@@ -129,6 +129,8 @@ callback function will receive a `object` called **data** that contain:
 
 - **enhanced** `boolean`: lrc format is enhanced or not
 
+actually you can also get data from the `Liricle.data` property directly. it's the same
+
 listen sync event:
 
 ``` javascript
