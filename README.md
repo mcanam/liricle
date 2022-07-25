@@ -1,10 +1,11 @@
 # Liricle
 
-liricle is javascript library for syncing timed lyrics with song. 
+Liricle is javascript library for syncing timed lyrics or commonly called [LRC file format](https://en.wikipedia.org/wiki/LRC_(file_format)) with song.
 
 you can see the demo [here](https://mcanam.github.io/liricle/)
 
-> liricle now supports enhanced lrc format
+> Liricle now support enhanced LRC format 🎉  
+> thanks to [@itaibh](https://github.com/itaibh) for the feature request and contributions 🤘
 
 ## Install 📦
 
@@ -28,7 +29,7 @@ if you don't want to use npm you can add the script tag below in your html
 
 ## Usage 🚀
 
-### Instantiation and initialization
+### Setup
 
 firstly you need to create the liricle instance
 
@@ -60,29 +61,37 @@ liricle.init({
 
 > you can call `init` method many times if you want to update the lyric.  
 
-### Syncronization
+### Sync lyrics
 
 you can sync the lyric by calling `sync` method
 
 ``` javascript
-liricle.sync(time, offset);
+liricle.sync(time, offset, continuous);
 ```
 
-this method has 2 parameters:
+this method has 3 parameters:
 
 - **time**: current time from audio player or something else in seconds.
 
   - **required:** `yes`
 
-  - **type**: `number` 
+  - **type**: `number`
 
-- **offset**: the lyric offset in seconds (optional). this is used to set the lyric speed.
+- **offset**: lyric offset in seconds (optional). this is used to set the lyric speed.
 
   - **required:** `no`
 
   - **type**: `number`
 
   - **default**: `0`
+
+- **continuous**: always emit sync event. by default liricle only emit sync event if the lyric index changes. but if you are working with enhanced lrc i recommend set it to true which will emit the event every second
+
+  - **required:** `no`
+
+  - **type**: `boolean`
+
+  - **default**: `false`
 
 ### Listen to event
 
@@ -92,13 +101,11 @@ you can add event listener by calling `on` method
 liricle.on(event, callback);
 ```
 
-liricle has 2 events: 
+liricle has 2 events:
 
 - **init**: when the `init` method is called
 
 - **sync**: when the `sync` method is called
-
-for example, see the code below:
 
 listen init event:
 
