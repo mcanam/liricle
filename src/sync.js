@@ -1,63 +1,66 @@
 /**
- * find closest lyric index from given time
+ * find closest lyric word and line from given time
  * @param {Object} data - output data from parser
- * @param {number} time - currrent time from audio player or something in seconds
- * @returns {Object} - the current lyric line and word
+ * @param {number} time - current time from audio player or something else
  */
-function sync(data, time) {
-      let line = findLine(data, time);
-      let word = line != null && data.enhanced ? findWord(line, time) : null;
+export default function sync(data, time) {
+      let line = null;
+      let word = null;
 
-      // delete words property from line
-      if (line != null) delete line.words;
+      const lines = data.lines;
+      line = findLine(lines, time);
+
+      if (line != null && data.enhanced) {
+            const words = line.words;
+            word = findWord(words, time);
+
+            // delete 'words' property from line
+            // because we don't need it anymore.
+            delete line.words;
+      }
 
       return { line, word };
 }
 
 /**
- * find closest line
- * @param {Object} data 
- * @param {number} time - currrent time
- * @returns {Object|null}
+ * find closest lyric line
+ * @param {Array} lines - array that contains lyric lines
+ * @param {number} time - time argument of the sync function
+ * @returns {(Object|null)} closest lyric line or null
  */
-function findLine(data, time) {
-      const lines = data.lines;
+function findLine(lines, time) {
       const index = getClosestIndex(lines, time);
-
       return index != null ? { index, ...lines[index] } : null;
 }
 
 /**
- * find closest word
- * @param {Object} line 
- * @param {number} time - currrent time
- * @returns {Object|null}
+ * find closest lyric word
+ * @param {Array} words - array that contains lyric words
+ * @param {number} time - time argument of the sync function
+ * @returns {(Object|null)} closest lyric word or null
  */
-function findWord(line, time) {
-      const words = line.words;
-
-      // hanlde if line not contain timed words.
-      if (words == null) return null;
+function findWord(words, time) {
+      // if words are null, just return it.
+      if (words == null) return words;
 
       const index = getClosestIndex(words, time);
-
       return index != null ? { index, ...words[index] } : null;
 }
 
 /**
- * find closest lyric index
- * @param {Array} data 
- * @param {number} time - currrent time 
- * @returns {number|null} index of lyric
+ * 
+ * @param {Array} items - array that contains lyric words or lines
+ * @param {number} time - time argument of the sync function
+ * @returns {(number|null)} closest index of lyric or null
  */
-function getClosestIndex(data, time) {
+function getClosestIndex(items, time) {
       // to find the closest index we just need to subtract each line or word time with the given time
       // then put the value into an array and find the smallest positive value with Math.min()
       // after that we can find the index from smallest value in array with indexOf() method.
 
       const scores = [];
 
-      data.forEach((item) => {
+      items.forEach(item => {
             const score = time - item.time;
             if (score >= 0) scores.push(score);
       });
@@ -69,5 +72,3 @@ function getClosestIndex(data, time) {
 
       return index;
 }
-
-export default sync;
