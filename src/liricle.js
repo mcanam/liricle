@@ -6,7 +6,7 @@ export default class Liricle {
       #activeWord = null;
       #onInit = () => {};
       #onSync = () => {};
-
+      
       constructor() {
             this.data = null;
       }
@@ -40,7 +40,7 @@ export default class Liricle {
             } 
             
             else {
-                  throw Error(`Liricle.init(): missing argument`);
+                  throw Error(`Liricle.init(): invalid argument`);
             }
             
             this.#onInit(this.data);
@@ -68,8 +68,12 @@ export default class Liricle {
             if (typeof continuous != "boolean") {
                   throw Error("Liricle.sync(): 'continuous' argument must be a boolean!");
             }
-
-            const { line, word } = sync(this.data, time + offset);
+            
+            if (offset === 0 && ("offset" in this.data.tags)) {
+                  offset = (parseFloat(this.data.tags.offset) / 1000) || 0;
+            }
+            
+            const { line, word } = sync(this.data, (time + offset));
             
             if (line == null && word == null) return;
 
