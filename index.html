@@ -1,192 +1,80 @@
-<!-- THIS IS FOR DEVELOPMENT ONLY -->
-<!-- THIS IS FOR DEVELOPMENT ONLY -->
-<!-- THIS IS FOR DEVELOPMENT ONLY -->
-<!-- THIS IS FOR DEVELOPMENT ONLY -->
-<!-- THIS IS FOR DEVELOPMENT ONLY -->
-
 <!DOCTYPE html>
 <html lang="en">
-      <head>
-            <title>Liricle Development</title>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                  * { box-sizing: border-box }
-                  
-                  body {
-                        width: 100vw; height: 100vh;
-                        margin: 0; display: flex;
-                  }
 
-                  html { font: 16px/1.5 sans-serif }
+<head>
+    <title>Liricle - Lyric Syncronizer Library</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#00001b">
+    <link rel="shortcut icon" type="image/x-icon" href="demo/favicon.ico">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.6.0/dist/nouislider.min.css">
+    <link rel="stylesheet" href="demo/style.css">
+</head>
 
-                  .panel {
-                        padding: 20px;
-                        height: 100vh;
-                        display: flex; flex-direction: column;
-                        border: 1px solid currentColor;
-                  }
+<body>
+    <header class="topbar">
+        <svg class="topbar__logo" xmlns="http://www.w3.org/2000/svg" width="40" height="72" fill="none" viewBox="0 0 40 72">
+            <path fill="#00F2C6" fill-rule="evenodd" d="M.026 28.553 0 28.57V0l19.974 14.305.026-.02v28.572L.026 28.553Z" clip-rule="evenodd" />
+            <path fill="#0277EF" fill-rule="evenodd" d="m0 57.143.026-.019L20 71.429V42.857l-.026.019L0 28.571v28.572Zm20 14.286L40 57.18 20 42.857V71.43Z" clip-rule="evenodd" />
+        </svg>
+        <h1 class="topbar__title">LIRICLE</h1>
+        <a href="https://github.com/mcanam/liricle" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+        </a>
+    </header>
 
-                  .panel.left { width: 25%; }
-                  .panel.right { width: 75%; }
-
-                  .lyric-line {
-                        margin-bottom: 10px;
-                  }
-
-                  .lyric-line.active {
-                        color: brown;
-                  }
-            </style>
-      </head>
-      <body>
-
-            <div class="panel left">
-                  <div>
-                        <div>lyric offset</div>
-                        <input type="number" id="$offset" step="0.1" value="-0.2">
-                  </div>
-                  <br>
-                  <div>
-                        <div>load audio</div>
-                        <input type="file" id="$file_audio">
-                  </div>
-                  <br>
-                  <div>
-                        <div>load lyric</div>
-                        <input type="file" id="$file_lyric">
-                  </div>
-                  <br>
-                  <div>=======</div>
-                  <br>
-                  <div>current line index: <span id="$info_curr_line">0</span></div>
-                  <br>
-                  <div>current word index: <span id="$info_curr_word">0</span></div>
-                  <br>
-                  <div>LRC is enhanced: <span id="$info_enhanced">false</span></div>
-                  <br>
-                  <div>current time: <span id="$info_time">00:00.00</span></div>
+    <main class="lyric">
+        <div class="lyric__cursor"></div>
+        <div class="lyric__content"></div>
+    </main>
+    
+    <div class="player">
+        <audio class="player__audio"></audio>
+        <button class="player__button" data-play="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+                <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause-fill" viewBox="0 0 16 16">
+                <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
+            </svg>
+        </button>
+        <div class="player__progress">
+            <div class="player__slider"></div>
+            <div class="player__time">
+                <span class="player__time--current">00:00.00</span>
+                <span class="player__time--total">00:00.00</span>
             </div>
+        </div>
+        <button class="player__button" data-menu="">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+            </svg>
+        </button>
+    </div>
+    
+    <div class="menu">
+        <div class="menu__item">
+            <label class="menu__label">Load lyric</label>
+            <button class="menu__input" data-action="lyric">choose file</button>
+        </div>
+        <div class="menu__item">
+            <label class="menu__label">Load audio</label>
+            <button class="menu__input" data-action="audio">choose file</button>
+        </div>
+        <div class="menu__item">
+            <label class="menu__label">Lyric offset</label>
+            <input class="menu__input" data-action="offset" type="number" value="0"></input>
+        </div>
+    </div>
 
-            <div class="panel right">
-                  <div style="position: relative; width: 100%; flex-grow: 1; overflow: auto;">
-                        <div id="$lrc_cursor" style="position: absolute; z-index: -1; width: 0px; height: 1rem; background: rgb(185, 230, 248); border-bottom: 2px solid rgb(0, 144, 201);"></div>
-                        <div id="$lrc_container"></div>
-                  </div>
-                  
-                  <audio id="$audio" controls style="width: 100%; height: 100px; margin-top: 20px"></audio>
-            </div>
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.6.0/dist/nouislider.min.js"></script>
+    <script src="demo/player.js"></script>
+    <script src="demo/menu.js"></script>
+    <script src="demo/script.js"></script>
+</body>
 
-            <script type="module">
-                  import Liricle from "./src/liricle.js";
-
-                  let offset = 0.2;
-
-                  const url = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/";
-                  const liricle = new Liricle();
-
-                  const $lines = [];
-                  let $activeLine = null;
-
-                  $offset.oninput = () => {
-                        offset = parseInt($offset.value);
-                        $audio.pause();
-                        $audio.play();
-                        console.log("offset changed", offset);
-                  };
-
-                  $audio.src = url + "audio.mp3";
-                  
-                  $audio.ontimeupdate = () => {
-                        const time = $audio.currentTime;
-                        liricle.sync(time, offset);
-                        $info_time.innerText = timeToText(time);
-                  };
-
-                  $file_audio.onchange = () => {
-                        const reader = new FileReader();
-
-                        reader.onload = () => {
-                              $audio.src = reader.result;
-                        }
-
-                        reader.readAsDataURL($file_audio.files[0]);
-                  };
-
-                  $file_lyric.onchange = () => {
-                        const reader = new FileReader();
-
-                        reader.onload = () => {
-                              liricle.init({ text: reader.result });
-                        }
-
-                        reader.readAsText($file_lyric.files[0]);
-                  };
-
-                  liricle.init({ url: url + "lyric-enhanced.lrc" });
-
-                  liricle.on("init", ({ tags, lines, enhanced }) => {
-                        console.log("init");
-                        $info_enhanced.innerText = enhanced;
-
-                        lines.forEach((line, index) => {
-                              const $line = document.createElement("div");
-
-                              $line.dataset.index = index;
-                              $line.className = "lyric-line";
-
-                              if (line.words == null) {
-                                    $line.innerText = line.text;
-                                    return $lines.push($line);
-                              }
-
-                              line.words.forEach(word=> {
-                                    const $word = document.createElement("span");
-
-                                    $word.className = "lyric-word";
-                                    $word.innerText = word.text + " ";
-
-                                    $line.append($word);
-                              });
-
-                              $lines.push($line);
-                        });
-
-                        $lrc_container.append(...$lines);
-                  });
-
-                  liricle.on("sync", (line, word) => {
-                        if ($activeLine) {
-                              $activeLine.classList.remove("active");
-                        }
-
-                        $activeLine = $lines[line.index];
-                        $activeLine.classList.add("active");
-
-                        $info_curr_line.innerText = line.index;
-
-                        if (word) {
-                              const $word = $activeLine.children[word.index];
-
-                              $lrc_cursor.style.width = $word.offsetWidth + "px";
-                              $lrc_cursor.style.top = $word.offsetTop + "px";
-                              $lrc_cursor.style.left = $word.offsetLeft + "px";
-
-                              $info_curr_word.innerText = word.index;
-                        }
-                  });
-
-                  function timeToText(time) {
-                        let min = Math.floor(time / 60);
-                        let sec = (time % 60).toFixed(2);
-
-                        min = min < 10 ? "0" + min : min;
-                        sec = sec < 10 ? "0" + sec : sec;
-
-                        return min + ":" + sec;
-                  }
-
-            </script>
-      </body>
 </html>
