@@ -5,14 +5,17 @@
     "main": "dist/liricle.min.js",
     "module": "src/liricle.js",
     "scripts": {
-        "watch": "rollup -c -w",
+        "start": "live-server --open=index.html?dev=true",
         "build": "rollup -c"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/mcanam/liricle.git"
     },
-    "keywords": [],
+    "keywords": [
+        "lrc",
+        "lyrics"
+    ],
     "author": "mcanam",
     "license": "MIT",
     "bugs": {
@@ -20,7 +23,9 @@
     },
     "homepage": "https://github.com/mcanam/liricle",
     "devDependencies": {
+        "live-server": "^1.2.2",
         "rollup": "^2.70.1",
-        "rollup-plugin-terser": "^7.0.2"
+        "rollup-plugin-terser": "^7.0.2",
+        "uvu": "^0.5.6"
     }
 }
