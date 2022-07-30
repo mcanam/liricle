@@ -10,22 +10,25 @@ const header = `
  */
 `;
 
+const config = properties => {
+    return {
+        format: "umd",
+        banner: header,
+        name: "Liricle",
+        ...properties
+    }
+};
+
 export default {
     input: "src/liricle.js",
     output: [
-        {
+        config({
             file: "dist/liricle.js",
-            format: "umd",
-            banner: header,
-            name: "Liricle",
-        },
-        {
+        }),
+        config({
             file: "dist/liricle.min.js",
-            format: "umd",
-            banner: header,
-            name: "Liricle",
             sourcemap: true,
             plugins: [terser()]
-        }
+        })
     ]
 }
