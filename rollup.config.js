@@ -11,24 +11,24 @@ const header = `
 `;
 
 const config = properties => {
-    return {
-        format: "umd",
-        banner: header,
-        name: "Liricle",
-        ...properties
-    }
+      return {
+            format: "umd",
+            banner: header,
+            name: "Liricle",
+            ...properties
+      };
 };
 
 export default {
-    input: "src/liricle.js",
-    output: [
-        config({
-            file: "dist/liricle.js",
-        }),
-        config({
-            file: "dist/liricle.min.js",
-            sourcemap: true,
-            plugins: [terser()]
-        })
-    ]
-}
+      input: "src/liricle.js",
+      output: [
+            config({
+                  file: "dist/liricle.js"
+            }),
+            config({
+                  file: "dist/liricle.min.js",
+                  sourcemap: true,
+                  plugins: [terser()]
+            })
+      ]
+};
