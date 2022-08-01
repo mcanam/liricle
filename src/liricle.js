@@ -1,118 +1,94 @@
 import parser from "./parser.js";
-import sync from "./sync.js";
+import syncher from "./syncher.js";
 
 export default class Liricle {
       #activeLine = null;
       #activeWord = null;
-      #onInit = () => {};
+      #offset = 0;
+      #data = {};
+      #onLoad = () => {};
       #onSync = () => {};
-      
-      constructor() {
-            this.data = null;
+
+      get data() {
+            return this.#data;
+      }
+
+      get offset() {
+            return this.#offset;
       }
 
       /**
-       * initialize Liricle
-       * @param {Object} options
+       * @param {number} value - lyric offset in milliseconds
+       */
+      set offset(value) {
+            value = parseFloat(value) / 1000; // convert value to seconds
+            this.#offset = value || 0; // if value is NaN, set 0
+      }
+
+      /**
+       * method to load lyric
+       * @param {Object} options - object that contains 'url' or 'text' properties
        * @param {string} options.text - lrc text
        * @param {string} options.url - lrc file url
        */
-      async init(options) {            
-            if (options && options.url) {
-                  try {
-                        const resp = await fetch(options.url);
-
-                        if (!resp.ok) {
-                              throw Error(`${resp.status} ${resp.statusText} (${resp.url})`);
-                        }
-
-                        const body = await resp.text();
-                        this.data = parser(body);
-                  } 
-                  
-                  catch (error) {
-                        throw Error(`Liricle.init(): ${error.message}`);
-                  }
-            } 
-
-            else if (options && options.text) {
-                  this.data = parser(options.text);
-            } 
-            
-            else {
-                  throw Error(`Liricle.init(): invalid argument`);
+      load(options = {}) {
+            if (options.text) { 
+                  this.#data = parser(options.text);
+                  this.#onLoad(this.#data);
             }
             
-            this.#onInit(this.data);
+            if (options.url) {
+                  fetch(options.url)
+                        .then(res => res.text())
+                        .then(text => {
+                              this.#data = parser(text);
+                              this.#onLoad(this.#data);
+                        })
+                        .catch(error => {
+                              throw Error("failed to load lyric file. " + error.message);
+                        });
+            }
       }
 
       /**
-       * sync lyric with current time
-       * @param {number} time - currrent time from audio player or something else in seconds
-       * @param {number} offset - lyric offset in seconds
-       * @param {boolean} continuous - always emit sync event 
+       * method to sync lyric
+       * @param {number} time - current player time or something else in seconds
+       * @param {boolean} [continuous] - always emit sync event (optional)
        */
-      sync(time, offset = 0, continuous = false) {
-            if (time == undefined) {
-                  throw Error("Liricle.sync(): missing 'time' argument");
-            }
+      sync(time, continuous = false) {
+            const { line, word } = syncher(this.data, time + this.offset);
+            const { enhanced } = this.data;
 
-            if (typeof time != "number") {
-                  throw Error("Liricle.sync(): 'time' argument must be a number!");
-            }
-
-            if (typeof offset != "number") {
-                  throw Error("Liricle.sync(): 'offset' argument must be a number!");
-            }
-
-            if (typeof continuous != "boolean") {
-                  throw Error("Liricle.sync(): 'continuous' argument must be a boolean!");
-            }
-            
-            if (offset === 0 && ("offset" in this.data.tags)) {
-                  offset = (parseFloat(this.data.tags.offset) / 1000) || 0;
-            }
-            
-            const { line, word } = sync(this.data, (time + offset));
-            
             if (line == null && word == null) return;
 
-            if (this.data.enhanced && word != null) {
-                  if (
-                        continuous == false &&
-                        line.index == this.#activeLine &&
-                        word.index == this.#activeWord
-                  ) return;
-
-                  this.#activeLine = line.index;
-                  this.#activeWord = word.index;
+            if (continuous) {
+                  return this.#onSync(line, word);
             }
 
-            else {
-                  if (
-                        continuous == false &&
-                        line.index == this.#activeLine
-                  ) return;
-                  
-                  this.#activeLine = line.index;
+            const isSameLine = line.index == this.#activeLine;
+            const isSameWord = word != null && word.index == this.#activeWord;
+
+            if (enhanced && word != null) {
+                  if (isSameLine && isSameWord) return;
+            } else { 
+                  if (isSameLine) return;
             }
 
             this.#onSync(line, word);
+
+            this.#activeLine = line.index;
+            this.#activeWord = word != null ? word.index : null;
       }
 
       /**
-       * listen to lyricle event
+       * listen to liricle event
        * @param {string} event - event name
        * @param {function} callback - event callback
        */
       on(event, callback) {
-            if (typeof callback != "function") {
-                  throw Error("Liricle.on(): 'callback' argument must be a function!");
-            }
-
             switch (event) {
-                  case "init":
-                        this.#onInit = callback;
+                  case "load":
+                        this.#onLoad = callback;
                         break;
                   case "sync":
                         this.#onSync = callback;
