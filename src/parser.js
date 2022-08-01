@@ -1,5 +1,5 @@
 // will match: "[tag:value]"
-const TAGS_REGEX = /\[([a-z]+):(.*)\]/i;
+const TAGS_REGEX = /\[(ar|ti|al|au|by|length|offset|re|ve):(.*)\]/i;
 
 // will match: "<00:00.00> blablabla"
 const WORD_REGEX = /<\d{2}:\d{2}(.\d{2,})?>\s*[^\s|<]*/g;
@@ -13,11 +13,11 @@ const WORD_TIME_REGEX = /<\d{2}:\d{2}(.\d{2,})?>/g;
 /**
  * parse lrc to javascript object
  * @param {string} text - lrc text
- * @returns {Object} parsed data from lrc
+ * @returns {Object} parsed lrc data
  */
 export default function parser(text) {
       const lines = text.split(/\r?\n/);
-      
+
       const output = {
             tags: {},
             lines: [],
@@ -33,8 +33,8 @@ export default function parser(text) {
             if (line) output.lines.push(...line);
       });
 
-      // if lrc has multiple time in the same line 
-      // parser will split them into individual lines 
+      // if lrc has multiple timestamps "[mm:ss.xx]" in the same line
+      // parser will split into individual lines
       // so we have to reorder them.
       output.lines = sortLines(output.lines);
 
@@ -46,14 +46,14 @@ export default function parser(text) {
  * @param {string} text - lrc line
  * @return {(Object|undefined)} extrated tag object or undefined
  */
- function extractTags(text) {
+function extractTags(text) {
       const tags = text.match(TAGS_REGEX);
 
       if (!tags) return;
 
-      return { 
-            name: tags[1], 
-            value: tags[2].trim() 
+      return {
+            name: tags[1],
+            value: tags[2].trim()
       };
 }
 
@@ -62,7 +62,7 @@ export default function parser(text) {
  * @param {string} line - lrc line
  * @return {(Array|undefined)} array that contains lrc line object or undefined
  */
- function extractLine(line) {
+function extractLine(line) {
       const times = line.match(LINE_TIME_REGEX);
       const bucket = [];
 
@@ -72,7 +72,7 @@ export default function parser(text) {
             bucket.push({
                   time: extractTime(value),
                   text: extractText(line),
-                  words: extractWords(line),
+                  words: extractWords(line)
             });
       });
 
@@ -81,14 +81,27 @@ export default function parser(text) {
 
 /**
  * extract time from lrc line and convert to seconds
- * @param {string} line - time string "[mm:ss.xx]"
+ * @param {string} timestamp - time string "[mm:ss.xx]"
  * @returns {number} extracted time number in seconds
  */
- function extractTime(line) {
-      let time = line.replace(/\[|\]|<|>/g, "");
+function extractTime(timestamp) {
+      let time = timestamp.replace(/\[|\]|<|>/g, "");
       time = convertTime(time);
 
       return time;
+}
+
+/**
+ * extract text from lrc line
+ * @param {string} line - lrc line
+ * @returns {string} extracted text
+ */
+function extractText(line) {
+      let text = line.replace(LINE_TIME_REGEX, "");
+      text = text.replace(WORD_TIME_REGEX, "");
+      text = text.replace(/\s{2,}/g, " ");
+
+      return text.trim();
 }
 
 /**
@@ -96,7 +109,7 @@ export default function parser(text) {
  * @param {string} line - lrc line
  * @returns {(Array|null)} extracted words or null
  */
- function extractWords(line) {
+function extractWords(line) {
       const words = line.match(WORD_REGEX);
       const bucket = [];
 
@@ -109,7 +122,7 @@ export default function parser(text) {
 
             bucket.push({
                   time: extractTime(time),
-                  text: extractText(value),
+                  text: extractText(value)
             });
       });
 
@@ -117,23 +130,11 @@ export default function parser(text) {
 }
 
 /**
- * extract text from lrc line
- * @param {string} line - lrc line
- * @returns {string} extracted text
- */
- function extractText(line) {
-      let text = line.replace(LINE_TIME_REGEX, "");
-      text = text.replace(WORD_TIME_REGEX, "");
-
-      return text.trim();
-}
-
-/**
- * convert "[03:24.73]" to 204.73 (total time in seconds)
+ * convert "03:24.73" to 204.73 (total time in seconds)
  * @param {string} time - time string "mm:ss.xx"
- * @returns {number} total time in seconds
+ * @returns {number} total time in secondsi
  */
- function convertTime(time) {
+function convertTime(time) {
       let [min, sec] = time.split(":");
 
       min = parseFloat(min) * 60;
@@ -144,7 +145,7 @@ export default function parser(text) {
 
 /**
  * sort lines by time (shortest to longest)
- * @param {Array} lines - parsed lrc lines
+ * @param {Array} lines - array of lrc lines objects
  * @returns {Array} sorted lines
  */
 function sortLines(lines) {
@@ -152,7 +153,7 @@ function sortLines(lines) {
 }
 
 /**
- * check the lrt format is enhanced or not
+ * check the lrc format is enhanced or not
  * @param {string} text - lrc text
  * @returns {boolean} is enhanced?
  */
