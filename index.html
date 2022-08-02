@@ -1,80 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
+      <head>
+            <title>Liricle - Lyric Syncronizer Library</title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+            <meta name="theme-color" content="#00001b" />
+            <link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJA73cC2O93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93AsTvdwIfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC0+93AlPvdwIFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93AvnvdwKk73cCJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC5O93AmzvdwILAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av3vdwK+73cCOu93AgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC8e93AorvdwIWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwLU73cCU+93AgUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC+e93AqbvdwInAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwLm73cCb+93AgwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwJ573cC/+93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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADfpwF20NMA/sbzAP7G8wD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB4xvMA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2cbyABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD6xvIAnMbyAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAOfG8gBxxvIADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD+xvIAwsbyAD7G8gABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAPPG8gCOxvIAGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA2MbyAFfG8gAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA/8byAPrG8gCrxvIAKgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP/G8gD/xvIA6MbyAHPG8gANAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB5xvIA/8byAP7G8gDExvIAQMbyAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gB6xvIA9cbyAJDG8gAaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gBkxvIAacbyAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///n///wAA///8P///AAD///gf//8AAP//4Af//wAA///AA///AAD//wAA//8AAP/+AAB//wAA//wAAD//AAD/8AAAD/8AAP/gAAAH/wAA/+AAAA//AAD/4AAAH/8AAP/gAAB//wAA/+AAAP//AAD/4AAB//8AAP/gAAf//wAA/+AAD///AAD/4AA///8AAP/gAH///wAA/+AA////AAD/4AD///8AAP/gAP///wAA/+AA////AAD/4AD///8AAP/gAP///wAA/+AA////AAD/4AD///8AAP/gAP///wAA/+AA////AAD/4AD///8AAP/gAP///wAA/+AA////AAD/4AD///8AAP/gAP///wAA/+AA////AAD/4AD///8AAP/gAP///wAA/+AA////AAD/4AD///8AAP/gA////wAA/+AH////AAD/4A////8AAP/gP////wAA/+B/////AAD/4f////8AAP/j/////wAA/+f/////AAD///////8AACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO93AiHvdwKn73cCn+93AhwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO93AgLvdwJE73cCx+93Av7vdwL973cCwO93Aj3vdwEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwIP73cCee93AuvvdwL/73cC/+93Av/vdwL/73cC5+93AnLvdwINAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA73cCLe93ArDvdwL773cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC+u93AqrvdwIqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA73cCB+93Al3vdwLb73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93AtjvdwJY73cCBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO93AhvvdwKU73cC9O93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93AvPvdwKQ73cCHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwIR73cCt+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93AvjvdwJ27ncBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO93AhzvdwLe73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwLn73cCc+93Ag4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA73cCHO93At7vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL+73cCw+93Aj7vdwIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwIc73cC3u93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC8+93ApDvdwIZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO93AhzvdwLe73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93AtjvdwJY73cCBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA73cCHO93At7vdwL/73cC/+93Av/vdwL/73cC/+93Av/vdwL/73cC/+93AvrvdwKs73cCKgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwIc73cC3u93Av/vdwL/73cC/+93Av/vdwL/73cC/+92Av/tfQL07XwCefB0Ag4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO93AhzvdwLe73cC/+93Av/vdwL/73cC/+93Av/vdgL/5ZQC/9LPAdnI6wAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA73cCHO93At7vdwL/73cC/+93Av/vdgL/7XwC/t2sAfzK5gD/xfQA28bzABoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvdwIc73cC3u93Av/vdwL/8HUC/+mJAv3UxwH8x/AA/sbzAP/G8gDbxvIAGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO93AhzvdwLe73YC/+94Av7ingH8zd4A/cbzAP/G8gD/xvIA/8byANvG8gAaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA73cCHPB1At7sgQL/2bkB/MjsAP7G8wD/xvIA/8byAP/G8gD/xvIA28byABoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADueQIc5ZYB29HSAf7G8gD/xvMA/8byAP/G8gD/xvIA/8byAP/G8gDbxvIAGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM/YABzJ6gDcxvMA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byANvG8gAaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxfQAHMbzAN7G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA28byABoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gAcxvIA3sbyAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gDbxvIAGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMbyABzG8gDexvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byANvG8gAaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxvIAHMbyAN7G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA28byABoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gAcxvIA3sbyAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byAP/G8gDbxvIAGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMbyABzG8gDexvIA/8byAP/G8gD/xvIA/8byAP/G8gD/xvIA/8byALrG8gARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxvIAHMbyAN7G8gD/xvIA/8byAP/G8gD/xvIA/8byAPfG8gCbxvIAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADG8gAcxvIA3sbyAP/G8gD/xvIA/8byAP/G8gDgxvIAZMbyAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMbyABzG8gDexvIA/8byAP/G8gD8xvIAt8byADMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxvIAHMbyAN7G8gD/xvIA7sbyAIHG8gASAAAAAAAA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" />
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" />
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.6.0/dist/nouislider.min.css" />
+            <style>
+                  *,
+                  *::before,
+                  *::after {
+                        padding: 0;
+                        margin: 0;
+                        box-sizing: border-box;
+                  }
 
-<head>
-    <title>Liricle - Lyric Syncronizer Library</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="theme-color" content="#00001b">
-    <link rel="shortcut icon" type="image/x-icon" href="demo/favicon.ico">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.6.0/dist/nouislider.min.css">
-    <link rel="stylesheet" href="demo/style.css">
-</head>
+                  html {
+                        font-family: "Poppins", sans-serif;
+                        font-size: 16px;
+                        color: #ededf8;
+                  }
 
-<body>
-    <header class="topbar">
-        <svg class="topbar__logo" xmlns="http://www.w3.org/2000/svg" width="40" height="72" fill="none" viewBox="0 0 40 72">
-            <path fill="#00F2C6" fill-rule="evenodd" d="M.026 28.553 0 28.57V0l19.974 14.305.026-.02v28.572L.026 28.553Z" clip-rule="evenodd" />
-            <path fill="#0277EF" fill-rule="evenodd" d="m0 57.143.026-.019L20 71.429V42.857l-.026.019L0 28.571v28.572Zm20 14.286L40 57.18 20 42.857V71.43Z" clip-rule="evenodd" />
-        </svg>
-        <h1 class="topbar__title">LIRICLE</h1>
-        <a href="https://github.com/mcanam/liricle" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-            </svg>
-        </a>
-    </header>
+                  body {
+                        position: relative;
+                        width: 100vw;
+                        height: 100vh;
+                        background-color: #00001b;
+                        overflow: hidden;
+                  }
 
-    <main class="lyric">
-        <div class="lyric__cursor"></div>
-        <div class="lyric__content"></div>
-    </main>
-    
-    <div class="player">
-        <audio class="player__audio"></audio>
-        <button class="player__button" data-play="false">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
-                <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
-            </svg>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause-fill" viewBox="0 0 16 16">
-                <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
-            </svg>
-        </button>
-        <div class="player__progress">
-            <div class="player__slider"></div>
-            <div class="player__time">
-                <span class="player__time--current">00:00.00</span>
-                <span class="player__time--total">00:00.00</span>
+                  a {
+                        text-decoration: none;
+                        color: inherit;
+                  }
+
+                  button,
+                  input {
+                        font-family: sans-serif;
+                        font-size: 1rem;
+                        color: inherit;
+                        border: none;
+                        outline: none;
+                        background-color: transparent;
+                  }
+
+                  button {
+                        user-select: none;
+                        cursor: pointer;
+                  }
+
+                  .bi {
+                        width: 1.2rem;
+                        height: auto;
+                        pointer-events: none;
+                  }
+
+                  .topbar,
+                  .player {
+                        position: fixed;
+                        z-index: 2;
+                        width: 100%;
+                        padding: 20px;
+                        display: flex;
+                        align-items: center;
+                        background-color: rgba(0, 0, 27, 0.2);
+                        backdrop-filter: blur(4px);
+                  }
+
+                  .topbar {
+                        top: 0;
+                        left: 0;
+                  }
+
+                  .topbar__logo {
+                        width: 0.9rem;
+                        height: auto;
+                        margin-right: 10px;
+                  }
+
+                  .topbar__title {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        margin-right: auto;
+                  }
+
+                  .player {
+                        bottom: 0;
+                        left: 0;
+                  }
+
+                  .player__button {
+                        line-height: 0; /* centering icon */
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 10px;
+                        background-color: rgba(255, 255, 255, 0.1);
+                  }
+
+                  .player__button[data-play="true"] .bi:nth-child(1) {
+                        display: none;
+                  }
+
+                  .player__button[data-play="true"] .bi:nth-child(2) {
+                        display: inline-block;
+                  }
+
+                  .player__button[data-play="false"] .bi:nth-child(1) {
+                        display: inline-block;
+                  }
+
+                  .player__button[data-play="false"] .bi:nth-child(2) {
+                        display: none;
+                  }
+
+                  .player__progress {
+                        flex-grow: 1;
+                        margin: 0 20px;
+                  }
+
+                  .player__slider {
+                        width: 100%;
+                        height: 2px;
+                        margin-bottom: 20px;
+                        border: none;
+                        box-shadow: unset;
+                        background-color: rgba(255, 255, 255, 0.1);
+                  }
+
+                  .player__slider .noUi-connect {
+                        background-color: #0277ef;
+                  }
+
+                  .player__slider .noUi-handle {
+                        width: 10px;
+                        height: 10px;
+                        right: -5px;
+                        top: -4px;
+                        border: none;
+                        border-radius: 50%;
+                        box-shadow: unset;
+                        background-color: #0277ef;
+                  }
+
+                  .player__slider .noUi-handle::before,
+                  .player__slider .noUi-handle::after {
+                        display: none;
+                  }
+
+                  .player__time {
+                        font-size: 0.6rem;
+                        line-height: 0;
+                        width: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                  }
+
+                  .menu {
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        z-index: 3;
+                        width: 250px;
+                        height: fit-content;
+                        padding: 10px 0;
+                        border-radius: 20px;
+                        background-color: rgba(255, 255, 255, 0.1);
+                        backdrop-filter: blur(8px);
+                        pointer-events: none;
+                        opacity: 0;
+                        transition: 0.2s;
+                  }
+
+                  .menu.show {
+                        pointer-events: unset;
+                        opacity: 1;
+                  }
+
+                  .menu__item {
+                        width: 100%;
+                        padding: 10px 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                  }
+
+                  .menu__input {
+                        width: 100px;
+                        padding: 15px;
+                        font-size: 0.8rem;
+                        font-weight: 500;
+                        text-align: center;
+                        border-radius: 10px;
+                        background-color: rgba(255, 255, 255, 0.1);
+                  }
+
+                  .lyric {
+                        position: relative;
+                        width: 100%;
+                        height: 100vh;
+                        padding: 300px 40px;
+                        overflow: auto;
+                        scroll-behavior: smooth;
+                  }
+
+                  .lyric::-webkit-scrollbar {
+                        display: none;
+                  }
+
+                  .lyric__line {
+                        text-align: center;
+                        font-size: 1.5rem;
+                        font-weight: 500;
+                        margin-bottom: 20px;
+                        opacity: 0.2;
+                        transition: 0.2s;
+                  }
+
+                  .lyric__line.active {
+                        opacity: 1;
+                  }
+
+                  .lyric__cursor {
+                        position: absolute;
+                        width: 4px;
+                        height: 4px;
+                        border-radius: 5px;
+                        background-color: currentColor;
+                        display: none;
+                        opacity: 0.2;
+                        transition: 0.3s;
+                  }
+            </style>
+      </head>
+
+      <body>
+            <header class="topbar">
+                  <svg class="topbar__logo" xmlns="http://www.w3.org/2000/svg" width="40" height="72" fill="none" viewBox="0 0 40 72">
+                        <path fill="#00F2C6" fill-rule="evenodd" d="M.026 28.553 0 28.57V0l19.974 14.305.026-.02v28.572L.026 28.553Z" clip-rule="evenodd" />
+                        <path fill="#0277EF" fill-rule="evenodd" d="m0 57.143.026-.019L20 71.429V42.857l-.026.019L0 28.571v28.572Zm20 14.286L40 57.18 20 42.857V71.43Z" clip-rule="evenodd" />
+                  </svg>
+                  <h1 class="topbar__title">LIRICLE</h1>
+                  <a href="https://github.com/mcanam/liricle" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                        </svg>
+                  </a>
+            </header>
+
+            <main class="lyric" id="$lyric">
+                  <div class="lyric__cursor" id="$lyric_cursor"></div>
+                  <div class="lyric__content" id="$lyric_content"></div>
+            </main>
+
+            <div class="player">
+                  <audio class="player__audio" id="$player_audio"></audio>
+                  <button class="player__button" data-play="false" id="$player_play_button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+                              <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause-fill" viewBox="0 0 16 16">
+                              <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
+                        </svg>
+                  </button>
+                  <div class="player__progress">
+                        <div class="player__slider" id="$player_slider"></div>
+                        <div class="player__time">
+                              <span class="player__time--current" id="$player_time_current">00:00.00</span>
+                              <span class="player__time--total" id="$player_time_total">00:00.00</span>
+                        </div>
+                  </div>
+                  <button class="player__button" id="$menu_button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                              <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                        </svg>
+                  </button>
             </div>
-        </div>
-        <button class="player__button" data-menu="">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-            </svg>
-        </button>
-    </div>
-    
-    <div class="menu">
-        <div class="menu__item">
-            <label class="menu__label">Load lyric</label>
-            <button class="menu__input" data-action="lyric">choose file</button>
-        </div>
-        <div class="menu__item">
-            <label class="menu__label">Load audio</label>
-            <button class="menu__input" data-action="audio">choose file</button>
-        </div>
-        <div class="menu__item">
-            <label class="menu__label">Lyric offset</label>
-            <input class="menu__input" data-action="offset" type="number" value="0"></input>
-        </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.6.0/dist/nouislider.min.js"></script>
-    <script src="demo/player.js"></script>
-    <script src="demo/menu.js"></script>
-    <script src="demo/script.js"></script>
-</body>
+            <div class="menu" id="$menu">
+                  <div class="menu__item">
+                        <label class="menu__label">Load lyric</label>
+                        <button class="menu__input" id="$menu_load_lyric">choose file</button>
+                  </div>
+                  <div class="menu__item">
+                        <label class="menu__label">Load audio</label>
+                        <button class="menu__input" id="$menu_load_audio">choose file</button>
+                  </div>
+                  <div class="menu__item">
+                        <label class="menu__label">Lyric offset</label>
+                        <input class="menu__input" id="$menu_lyric_offset" type="number" value="0" />
+                  </div>
+            </div>
 
+            <script src="https://cdn.jsdelivr.net/npm/nouislider@15.6.0/dist/nouislider.min.js"></script>
+            <script>
+                        (function setup() {
+                              const search = location.search;
+                              const params = new URLSearchParams(search);
+
+                              if (params.get("dev") == "true") {
+                                    import("./src/liricle.js").then(m => main(m.default));
+                              }
+
+                              else {
+                                    const script = document.createElement("script");
+
+                                    script.src = "dist/liricle.js";
+                                    script.onload = () => main(window.Liricle);
+
+                                    document.body.append(script);
+                              }
+                        })();
+
+                        function main(Liricle) {
+                              window.liricle = new Liricle();
+
+                              ////////////////////// PLAYER //////////////////////////////
+
+                              let sliding = false;
+
+                              noUiSlider.create($player_slider, {
+                                    start: 0,
+                                    connect: "lower",
+                                    range: { min: 0, max: 100 },
+                              });
+
+                              $player_slider.noUiSlider.on("slide", () => {
+                                    const value = parseFloat($player_slider.noUiSlider.get());
+                                    sliding = true;
+                                    $player_audio.currentTime = value;
+                              });
+
+                              $player_slider.noUiSlider.on("change", () => {
+                                    sliding = false;
+                              });
+
+                              $player_play_button.addEventListener("click", () => {
+                                    if (isNaN($player_audio.duration)) return;
+
+                                    if ($player_play_button.dataset.play == "false") {
+                                          $player_audio.play();
+                                          $player_play_button.dataset.play = "true";
+                                    } else {
+                                          $player_audio.pause();
+                                          $player_play_button.dataset.play = "false";
+                                    }
+                              });
+
+                              $player_audio.src = "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/audio.mp3";
+
+                              $player_audio.addEventListener("canplaythrough", () => {
+                                    const duration = $player_audio.duration;
+
+                                    $player_slider.noUiSlider.updateOptions({
+                                          range: { min: 0, max: duration },
+                                    });
+
+                                    $player_time_total.innerText = timeToText(duration);
+                              });
+
+                              $player_audio.addEventListener("timeupdate", () => {
+                                    const time = $player_audio.currentTime;
+
+                                    if (!sliding) $player_slider.noUiSlider.set(time);
+                                    $player_time_current.innerText = timeToText(time);
+                              });
+
+                              $player_audio.addEventListener("ended", () => {
+                                    $player_play_button.dataset.play = "false";
+                              });
+
+                              function timeToText(time) {
+                                    let min = Math.floor(time / 60);
+                                    let sec = (time % 60).toFixed(2);
+                                    min = min < 10 ? "0" + min : min;
+                                    return min + ":" + sec;
+                              }
+
+                              ////////////////////// MENU //////////////////////////////
+
+                              let isShow = false;
+
+                              $menu_load_lyric.addEventListener("click", () => {
+                                    loadFile(dataURL => liricle.load({ url: dataURL }));
+                              });
+
+                              $menu_load_audio.addEventListener("click", () => {
+                                    loadFile(dataURL => ($player_audio.src = dataURL));
+                              });
+
+                              $menu_lyric_offset.addEventListener("blur", () => {
+                                    liricle.offset = parseFloat($menu_lyric_offset.value);
+                              });
+
+                              $menu_button.addEventListener("click", () => {
+                                    const rect = $menu_button.getBoundingClientRect();
+
+                                    $menu.style.top = rect.y - $menu.offsetHeight - 20 + "px";
+                                    $menu.style.left = rect.x - $menu.offsetWidth + 50 + "px";
+                                    $menu.classList[isShow ? "remove" : "add"]("show");
+
+                                    isShow = !isShow;
+                              });
+
+                              window.addEventListener("click", e => {
+                                    if (!isShow) return;
+                                    if (e.target.closest(".menu")) return;
+                                    if (e.target == $menu_button) return;
+
+                                    $menu.classList.remove("show");
+                                    isShow = !isShow;
+                              });
+
+                              function loadFile(callback) {
+                                    const input = document.createElement("input");
+                                    const reader = new FileReader();
+
+                                    input.type = "file";
+                                    input.multiple = false;
+
+                                    input.onchange = () => {
+                                          const file = input.files[0];
+                                          reader.readAsDataURL(file);
+                                    };
+
+                                    reader.onload = () => {
+                                          callback(reader.result);
+                                    };
+
+                                    input.click();
+                              }
+
+                              ////////////////////// LYRIC //////////////////////////////
+
+                              let $lines = [];
+                              let $activeLine = null;
+
+                              liricle.load({
+                                    url: "https://raw.githubusercontent.com/mcanam/assets/main/liricle-demo/lyric-enhanced.lrc"
+                              });
+
+                              liricle.on("load", ({ tags, lines, enhanced }) => {
+                                    $lines = [];
+                                    $activeLine = null;
+                                    $lyric_content.innerHTML = "";
+
+                                    // set default offset
+                                    if ("offset" in tags) {
+                                          liricle.offset = tags.offset;
+                                          $menu_lyric_offset.value = tags.offset;
+                                    }
+
+                                    lines.forEach(line => {
+                                          const $line = document.createElement("div");
+                                          $line.className = "lyric__line";
+                                          $line.innerHTML = line.words ? "" : line.text;
+
+                                          if (enhanced && line.words) {
+                                                line.words.forEach(word => {
+                                                      const $word = document.createElement("span");
+                                                      $word.className = "lyric__word";
+                                                      $word.innerHTML = word.text + " ";
+
+                                                      $line.append($word);
+                                                });
+                                          }
+
+                                          $lines.push($line);
+                                          $lyric_content.append(...$lines);
+                                    });
+
+                                    if (enhanced) $lyric_cursor.style.display = "block";
+                              });
+
+                              liricle.on("sync", (line, word) => {
+                                    if ($activeLine) {
+                                          $activeLine.classList.remove("active");
+                                    }
+
+                                    $activeLine = $lines[line.index];
+                                    $activeLine.classList.add("active");
+
+                                    const oh1 = $lyric.offsetHeight / 2;
+                                    const oh2 = $activeLine.offsetHeight / 2;
+
+                                    $lyric.scrollTop = $activeLine.offsetTop - (oh1 - oh2);
+
+                                    if (word) {
+                                          const $word = $activeLine.children[word.index];
+
+                                          $lyric_cursor.style.width = $word.offsetWidth + "px";
+                                          $lyric_cursor.style.top = ($word.offsetTop + $word.offsetHeight) + "px";
+                                          $lyric_cursor.style.left = $word.offsetLeft + "px";
+                                    }
+                              });
+
+                              $player_audio.addEventListener("timeupdate", () => {
+                                    const time = $player_audio.currentTime;
+                                    liricle.sync(time);
+                              });
+                        }
+            </script>
+      </body>
 </html>
