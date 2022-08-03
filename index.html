@@ -306,12 +306,15 @@
                               }
 
                               else {
-                                    const script = document.createElement("script");
+                                    fetch("https://raw.githubusercontent.com/mcanam/liricle/main/package.json").then(async res => {
+                                          const { version } = await res.json();
+                                          const script = document.createElement("script");
 
-                                    script.src = "dist/liricle.js";
-                                    script.onload = () => main(window.Liricle);
+                                          script.src = `https://cdn.jsdelivr.net/npm/liricle@${version}/dist/liricle.js`;
+                                          script.onload = () => main(window.Liricle);
 
-                                    document.body.append(script);
+                                          document.body.append(script);
+                                    });
                               }
                         })();
 
@@ -393,7 +396,7 @@
                               });
 
                               $menu_lyric_offset.addEventListener("blur", () => {
-                                    liricle.offset = parseFloat($menu_lyric_offset.value);
+                                    liricle.offset = $menu_lyric_offset.value;
                               });
 
                               $menu_button.addEventListener("click", () => {
