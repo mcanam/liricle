@@ -1,15 +1,15 @@
 # Liricle
 
-Liricle is javascript library for syncing timed lyrics or commonly called [LRC file format](https://en.wikipedia.org/wiki/LRC_(file_format)) with song.
+Liricle is javascript library for syncing timed lyrics or commonly called [LRC](https://en.wikipedia.org/wiki/LRC_(file_format)) file format with song.
 
-you can see the demo [here](https://mcanam.github.io/liricle/)
+**[Live Demo →](https://mcanam.github.io/liricle)**
 
 > Liricle now support enhanced LRC format 🎉  
 > thanks to [@itaibh](https://github.com/itaibh) for the feature request and contributions 🤘
 
 ## Install 📦
 
-install using npm
+Install using npm
 
 ``` bash
 npm install liricle
@@ -21,7 +21,7 @@ once installed you can import it into your project
 import Liricle from "liricle";
 ```
 
-if you don't want to use npm you can add the script tag below in your html
+If you don't want to use npm you can add the script tag below in your html
 
 ``` html
 <script src="https://cdn.jsdelivr.net/npm/liricle"></script>
@@ -29,28 +29,32 @@ if you don't want to use npm you can add the script tag below in your html
 
 ## Usage 🚀
 
+> ⚡ You can directly see the example **[here →](https://github.com/mcanam/liricle/tree/main/examples/simple)**
+
 ### Setup
 
-firstly you need to create the liricle instance
+Create the liricle instance
 
 ``` javascript
 const liricle = new Liricle();
 ```
 
-after that you can load the lyric by calling `init` method like the example below:
+### Load lyric
 
-load from url:
+Load lyric via url or text with the `.load()` method
+
+#### Load from url
 
 ```javascript
-liricle.init({
+liricle.load({
     url: "your-lrc-file.lrc"
 });
 ```
 
-load from text:
+#### Load from text
 
 ```javascript
-liricle.init({
+liricle.load({
     text: `
       [01:02.03] lyric line 1
       [04:05.06] lyric line 2
@@ -59,97 +63,131 @@ liricle.init({
 });
 ```
 
-> you can call `init` method many times if you want to update the lyric.  
+> ⚡ You can call `.load()` method many times if you want to update the lyric.  
 
-### Sync lyrics
+### Sync lyric
 
-you can sync the lyric by calling `sync` method
+Sync lyric by calling `.sync()` method
 
 ``` javascript
-liricle.sync(time, offset, continuous);
+liricle.sync(time, continuous);
 ```
 
-this method has 3 parameters:
+the method has 2 parameters:
 
-- **time**: current time from audio player or something else in seconds.
+- **time**: current time from audio player or something else in seconds
 
-  - **required:** `yes`
+  - required: `yes`
 
-  - **type**: `number`
+  - type: `number`
 
-- **offset**: lyric offset in seconds (optional). this is used to set the lyric speed.
+- **continuous**: always emit sync event  
 
-  - **required:** `no`
+  by default liricle only emit [sync event](#sync-event) if the lyric index changes,  
+  but if you are working with enhanced lrc i recommend set it to `true` which will emit the event every second.
 
-  - **type**: `number`
+  - required: `no`
 
-  - **default**: `0`
+  - type: `boolean`
 
-- **continuous**: always emit sync event. by default liricle only emit sync event if the lyric index changes. but if you are working with enhanced lrc i recommend set it to true which will emit the event every second
+  - default: `false`
 
-  - **required:** `no`
+### Adjust lyric offset
 
-  - **type**: `boolean`
+To adjust offset or speed of the lyric you can set the `.offset` property
 
-  - **default**: `false`
+``` javascript
+// positive value => speed up
+// negative value ​​=> slow down
+liricle.offset = 200; // value in milliseconds.
+```
 
 ### Listen to event
 
-you can add event listener by calling `on` method
+Liricle has 2 events:
+
+- load: when the `.load()` method is called
+
+- sync: when the `.sync()` method is called
+
+You can listen for events by using the `.on()` method as in the example below:
+
+#### load event
 
 ``` javascript
-liricle.on(event, callback);
-```
-
-liricle has 2 events:
-
-- **init**: when the `init` method is called
-
-- **sync**: when the `sync` method is called
-
-listen init event:
-
-``` javascript
-liricle.on("init", (data) => {
-      // ....
+liricle.on("load", (data) => {
+  // ...
 });
 ```
 
-callback function will receive a `object` called **data** that contain:
+callback function will receive an `object`
 
-- **tags** `Object`: key-value pair of lyric tags info
+<details>
+  <summary>expand to see code</summary>
 
-- **lines** `Array`: array of lyric line object that contain:
+  ``` javascript
+  {
 
-  - **time** `number`: lyric line time in seconds
+    // lrc tags or metadata
+    "tags": {
+      "ar": "Liricle",
+      "ti": "Javascript lyric synchronizer library",
+      "offset": "200"
+    },
 
-  - **text** `string`: lyric line text
+    // lyric lines
+    "lines": [
+      {
+        "time": 39.98,
+        "text": "Hello world",
 
-  - **words** `Array`: every word of the lyric line if the lrc is enhanced. otherwise `null`
+        // if lrc format is not enhanced, words value will be null.
+        "words": [
+          {
+            time: 40.10,
+            text: "Hello"
+          },
+          ......
+        ]
+      },
+      ......
+    ],
 
-- **enhanced** `boolean`: lrc format is enhanced or not
+    // indicates whether the lrc format is enhanced or not.
+    "enhanced": true
 
-actually you can also get data from the `Liricle.data` property directly. it's the same
+  }
+  ```
 
-listen sync event:
+</details>
+
+#### sync event
 
 ``` javascript
 liricle.on("sync", (line, word) => {
-      // ...
+  // ...
 });
 ```
 
-callback function will receive 2 arguments called **line** and **word**.  \
-both can be `object` or `null` if none of the lyrics match the time. so always check the value.
+> 🚧 If lrc format is not enhanced the word value will be `null`
 
-both **line** and **word** objects contain:
+callback function will receive 2 arguments which represents the current lyric. both can be `object` or `null` if none of the lyrics match the time. so always check the value
 
-- **index** `number`: current line or word index
+<details>
+  <summary>expand to see code</summary>
 
-- **text** `string`: current lyric text
+  ``` javascript
+  // both line and word objects have the same properties
+  
+  {
+    index: 1,
+    time: 39.98,
+    text: "Hello world"
+  }
+  ```
 
-- **time** `number`: current lyric time
+</details>
 
 ### Example
 
-for a complete example you can check the [example folder](https://github.com/mcanam/liricle/tree/main/example).
+For a complete example you can see **[here →](https://github.com/mcanam/liricle/tree/main/examples/simple)**
