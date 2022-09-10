@@ -173,6 +173,10 @@ both can be `object` or `null` if none of the lyrics match the time so always ch
 
 for a complete example you can see **[here →](https://github.com/mcanam/liricle/tree/main/examples/simple)**
 
+## Contributing
+
+want to contribute? [Let's go](https://github.com/mcanam/liricle/blob/main/.github/CONTRIBUTING.md) 🚀
+
 ## Licence
 
-distributed under the MIT License. see [LICENSE](https://github.com/mcanam/lirilce/blob/main/LICENSE) for more information.
+distributed under the MIT License. see [LICENSE](https://github.com/mcanam/liricle/blob/main/LICENSE) for more information.
