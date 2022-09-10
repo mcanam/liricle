@@ -4,24 +4,18 @@ Liricle is javascript library for syncing timed lyrics or commonly called [LRC](
 
 **[Live Demo →](https://mcanam.github.io/liricle)**
 
-> Liricle now support enhanced LRC format 🎉  
+> Liricle now support [enhanced](https://en.wikipedia.org/wiki/LRC_(file_format)#Enhanced_format) LRC format 🎉  
 > thanks to [@itaibh](https://github.com/itaibh) for the feature request and contributions 🤘
 
-## Install 📦
+## Installation 📦
 
-Install using npm
+using npm:
 
 ``` bash
 npm install liricle
 ```
 
-once installed you can import it into your project
-
-``` javascript
-import Liricle from "liricle";
-```
-
-If you don't want to use npm you can add the script tag below in your html
+in browser:
 
 ``` html
 <script src="https://cdn.jsdelivr.net/npm/liricle"></script>
@@ -29,21 +23,17 @@ If you don't want to use npm you can add the script tag below in your html
 
 ## Usage 🚀
 
-> ⚡ You can directly see the example **[here →](https://github.com/mcanam/liricle/tree/main/examples/simple)**
-
 ### Setup
 
-Create the liricle instance
+create the Liricle instance
 
 ``` javascript
 const liricle = new Liricle();
 ```
 
-### Load lyric
+### Load lyrics
 
-Load lyric via url or text with the `.load()` method
-
-#### Load from url
+from url:
 
 ```javascript
 liricle.load({
@@ -51,7 +41,7 @@ liricle.load({
 });
 ```
 
-#### Load from text
+from text:
 
 ```javascript
 liricle.load({
@@ -63,17 +53,15 @@ liricle.load({
 });
 ```
 
-> ⚡ You can call `.load()` method many times if you want to update the lyric.  
+you can call `.load()` method many times if you want to update the lyrics.  
 
-### Sync lyric
-
-Sync lyric by calling `.sync()` method
+### Sync lyrics
 
 ``` javascript
 liricle.sync(time, continuous);
 ```
 
-the method has 2 parameters:
+`.sync()` method has 2 parameters:
 
 - **time**: current time from audio player or something else in seconds
 
@@ -81,10 +69,7 @@ the method has 2 parameters:
 
   - type: `number`
 
-- **continuous**: always emit sync event  
-
-  by default liricle only emit [sync event](#sync-event) if the lyric index changes,  
-  but if you are working with enhanced lrc i recommend set it to `true` which will emit the event every second.
+- **continuous**: always emit [sync event](#on-sync-event). by default Liricle only emit [sync event](#on-sync-event) if the lyric index changes
 
   - required: `no`
 
@@ -92,27 +77,21 @@ the method has 2 parameters:
 
   - default: `false`
 
-### Adjust lyric offset
+### Adjust lyrics offset
 
-To adjust offset or speed of the lyric you can set the `.offset` property
+to adjust lyrics offset or speed, you can set `.offset` property value. the value is `number` in milliseconds
 
 ``` javascript
-// positive value => speed up
-// negative value ​​=> slow down
-liricle.offset = 200; // value in milliseconds.
+// positive value = speed up
+liricle.offset = 200;
+
+// negative value = slow down
+liricle.offset = -200;
 ```
 
 ### Listen to event
 
-Liricle has 2 events:
-
-- load: when the `.load()` method is called
-
-- sync: when the `.sync()` method is called
-
-You can listen for events by using the `.on()` method as in the example below:
-
-#### load event
+#### on load event
 
 ``` javascript
 liricle.on("load", (data) => {
@@ -120,7 +99,7 @@ liricle.on("load", (data) => {
 });
 ```
 
-callback function will receive an `object`
+callback function will receive an `object` of parsed LRC file
 
 <details>
   <summary>expand to see code</summary>
@@ -128,21 +107,22 @@ callback function will receive an `object`
   ``` javascript
   {
 
-    // lrc tags or metadata
-    "tags": {
-      "ar": "Liricle",
-      "ti": "Javascript lyric synchronizer library",
-      "offset": "200"
+    // LRC tags or metadata
+    tags: {
+      ar: "Liricle",
+      ti: "Javascript lyric synchronizer library",
+      offset: 200
     },
 
     // lyric lines
-    "lines": [
+    lines: [
       {
-        "time": 39.98,
-        "text": "Hello world",
+        time: 39.98,
+        text: "Hello world",
 
-        // if lrc format is not enhanced, words value will be null.
-        "words": [
+        // if LRC format is not enhanced
+        // words value will be null.
+        words: [
           {
             time: 40.10,
             text: "Hello"
@@ -154,14 +134,14 @@ callback function will receive an `object`
     ],
 
     // indicates whether the lrc format is enhanced or not.
-    "enhanced": true
+    enhanced: true
 
   }
   ```
 
 </details>
 
-#### sync event
+#### on sync event
 
 ``` javascript
 liricle.on("sync", (line, word) => {
@@ -169,9 +149,10 @@ liricle.on("sync", (line, word) => {
 });
 ```
 
-> 🚧 If lrc format is not enhanced the word value will be `null`
+> 🚧 If LRC format is not enhanced the `word` value will be `null`
 
-callback function will receive 2 arguments which represents the current lyric. both can be `object` or `null` if none of the lyrics match the time. so always check the value
+callback function will receive 2 arguments which represents the current lyric.  
+both can be `object` or `null` if none of the lyrics match the time so always check the value.
 
 <details>
   <summary>expand to see code</summary>
@@ -188,6 +169,10 @@ callback function will receive 2 arguments which represents the current lyric. b
 
 </details>
 
-### Example
+## Example
 
-For a complete example you can see **[here →](https://github.com/mcanam/liricle/tree/main/examples/simple)**
+for a complete example you can see **[here →](https://github.com/mcanam/liricle/tree/main/examples/simple)**
+
+## Licence
+
+distributed under the MIT License. see [LICENSE](https://github.com/mcanam/lirilce/blob/main/LICENSE) for more information.
