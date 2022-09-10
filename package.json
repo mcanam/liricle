@@ -1,6 +1,6 @@
 {
       "name": "liricle",
-      "version": "4.0.0",
+      "version": "4.0.1",
       "description": "javascript lyric synchronizer library",
       "type": "module",
       "main": "dist/liricle.min.js",
