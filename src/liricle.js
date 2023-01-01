@@ -4,6 +4,7 @@ import syncher from "./syncher.js";
 export default class Liricle {
       #activeLine = null;
       #activeWord = null;
+      #isLoaded = false;
       #offset = 0;
       #data = {};
       #onLoad = () => {};
@@ -26,14 +27,17 @@ export default class Liricle {
       }
 
       /**
-       * method to load lyric
+       * method to load lyrics
        * @param {Object} options - object that contains 'url' or 'text' properties
        * @param {string} options.text - lrc text
        * @param {string} options.url - lrc file url
        */
       load(options = {}) {
+            this.#isLoaded = false;
+
             if (options.text) { 
                   this.#data = parser(options.text);
+                  this.#isLoaded = true;
                   this.#onLoad(this.#data);
             }
             
@@ -42,22 +46,29 @@ export default class Liricle {
                         .then(res => res.text())
                         .then(text => {
                               this.#data = parser(text);
+                              this.#isLoaded = true;
                               this.#onLoad(this.#data);
                         })
                         .catch(error => {
-                              throw Error("failed to load lyric file. " + error.message);
+                              this.#isLoaded = false;
+                              throw Error("[Liricle] Failed to load LRC. " + error.message);
                         });
             }
       }
 
       /**
-       * method to sync lyric
+       * method to sync lyrics
        * @param {number} time - current player time or something else in seconds
        * @param {boolean} [continuous] - always emit sync event (optional)
        */
       sync(time, continuous = false) {
-            const { line, word } = syncher(this.data, time + this.offset);
-            const { enhanced } = this.data;
+            if (!this.#isLoaded) {
+                  // if lrc is not loaded, stop execution.
+                  return console.warn("[Liricle] LRC not loaded yet.");
+            }
+
+            const { enhanced } = this.#data;
+            const { line, word } = syncher(this.#data, time + this.offset);
 
             if (line == null && word == null) return;
 

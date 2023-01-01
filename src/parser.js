@@ -1,8 +1,5 @@
 // will match: "[tag:value]"
-const TAGS_REGEX = /\[(ar|ti|al|au|by|length|offset|re|ve):(.*)\]/i;
-
-// will match: "<00:00.00> blablabla"
-const WORD_REGEX = /<\d{2}:\d{2}(.\d{2,})?>\s*[^\s|<]*/g;
+const TAG_REGEX = /\[(ar|ti|al|au|by|length|offset|re|ve):(.*)\]/i;
 
 // will match: "[00:00.00]"
 const LINE_TIME_REGEX = /\[\d{2}:\d{2}(.\d{2,})?\]/g;
@@ -10,73 +7,76 @@ const LINE_TIME_REGEX = /\[\d{2}:\d{2}(.\d{2,})?\]/g;
 // will match: "<00:00.00>"
 const WORD_TIME_REGEX = /<\d{2}:\d{2}(.\d{2,})?>/g;
 
+// will match: "<00:00.00> blablabla"
+const ENHANCED_REGEX = /<\d{2}:\d{2}(.\d{2,})?>\s*[^\s|<]*/g;
+
 /**
  * parse lrc to javascript object
- * @param {string} text - lrc text
+ * @param {string} lrc - lrc text
  * @returns {Object} parsed lrc data
  */
-export default function parser(text) {
-      const lines = text.split(/\r?\n/);
+export default function parser(lrc) {
+      if (lrc == '' || !lrc.trim()) {
+            console.warn("[Liricle] LRC is empty.");
+      }
 
       const output = {
-            tags: {},
+            tags : {},
             lines: [],
-            enhanced: isEnhanced(text)
+            enhanced: isEnhanced(lrc)
       };
+
+      const lines = lrc.split(/\r?\n/);
 
       // parsing started
       lines.forEach(value => {
-            const tags = extractTags(value);
-            const line = extractLine(value);
+            const tag  = parseTag(value);
+            const line = parseLine(value);
 
-            if (tags) output.tags[tags.name] = tags.value;
+            if (tag)  output.tags[tag.key] = tag.value;
             if (line) output.lines.push(...line);
       });
 
-      // if lrc has multiple timestamps "[mm:ss.xx]" in the same line
-      // parser will split into individual lines
-      // so we have to reorder them.
+      // if lrc has multiple timestamps "[mm:ss.xx]" in the same line.
+      // parser will split into individual lines. so, we have to reorder them.
       output.lines = sortLines(output.lines);
 
       return output;
 }
 
 /**
- * extract tag data from lrc
- * @param {string} text - lrc line
+ * parse lrc tag
+ * @param {string} line - lrc line value
  * @return {(Object|undefined)} extrated tag object or undefined
  */
-function extractTags(text) {
-      const tags = text.match(TAGS_REGEX);
+function parseTag(line) {
+      const [, key, value] = line.match(TAG_REGEX) || [];
+      if (!key || !value) return;
 
-      if (!tags) return;
-
-      return {
-            name: tags[1],
-            value: tags[2].trim()
-      };
+      return { key, value: value.trim() };
 }
 
 /**
- * extract time, text and words from lrc
- * @param {string} line - lrc line
+ * parse time, text and words from lrc
+ * @param {string} line - lrc line value
  * @return {(Array|undefined)} array that contains lrc line object or undefined
  */
-function extractLine(line) {
-      const times = line.match(LINE_TIME_REGEX);
-      const bucket = [];
+function parseLine(line) {
+      const output = [];
+      const timestamps = line.match(LINE_TIME_REGEX);
 
-      if (!times) return;
+      if (!timestamps) return;
 
-      times.forEach(value => {
-            bucket.push({
-                  time: extractTime(value),
-                  text: extractText(line),
+      // lrc can have multiple timestamps "[mm:ss.xx]" on the same line.
+      timestamps.forEach(timestamp => {
+            output.push({
+                  time : extractTime(timestamp),
+                  text : extractText(line),
                   words: extractWords(line)
             });
       });
 
-      return bucket;
+      return output;
 }
 
 /**
@@ -98,8 +98,8 @@ function extractTime(timestamp) {
  */
 function extractText(line) {
       let text = line.replace(LINE_TIME_REGEX, "");
-      text = text.replace(WORD_TIME_REGEX, "");
-      text = text.replace(/\s{2,}/g, " ");
+          text = text.replace(WORD_TIME_REGEX, "");
+          text = text.replace(/\s{2,}/g, " ");
 
       return text.trim();
 }
@@ -110,23 +110,23 @@ function extractText(line) {
  * @returns {(Array|null)} extracted words or null
  */
 function extractWords(line) {
-      const words = line.match(WORD_REGEX);
-      const bucket = [];
+      const output = [];
+      const words = line.match(ENHANCED_REGEX);
 
       if (!words) return null;
 
-      words.forEach(value => {
+      words.forEach(word => {
             // extract timestamp "<00:00.00>" with regex
             // i think it's easier than split them
-            const time = value.match(WORD_TIME_REGEX)[0];
+            const timestamp = word.match(WORD_TIME_REGEX)[0];
 
-            bucket.push({
-                  time: extractTime(time),
-                  text: extractText(value)
+            output.push({
+                  time: extractTime(timestamp),
+                  text: extractText(word)
             });
       });
 
-      return bucket;
+      return output;
 }
 
 /**
@@ -158,5 +158,5 @@ function sortLines(lines) {
  * @returns {boolean} is enhanced?
  */
 function isEnhanced(text) {
-      return WORD_TIME_REGEX.test(text);
+      return ENHANCED_REGEX.test(text);
 }

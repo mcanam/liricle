@@ -1,5 +1,5 @@
 /**
- * find closest lyric word and line from given time
+ * find closest word and line from given time
  * @param {Object} data - output data from parser
  * @param {number} time - current time from audio player or something else
  */
