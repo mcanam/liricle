@@ -3,7 +3,7 @@
     const params = new URLSearchParams(search);
 
     if (params.get("dev") == "true") {
-        import("./src/liricle.js").then(m => main(m.default));
+        import("../src/liricle.js").then(m => main(m.default));
     }
 
     else {
