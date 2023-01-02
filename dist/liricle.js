@@ -1,6 +1,6 @@
 
 /*!
- * liricle v4.0.0
+ * liricle v4.0.3
  * javascript lyric synchronizer library
  * https://github.com/mcanam/liricle
  * MIT license by mcanam
@@ -13,10 +13,7 @@
 })(this, (function () { 'use strict';
 
       // will match: "[tag:value]"
-      const TAGS_REGEX = /\[(ar|ti|al|au|by|length|offset|re|ve):(.*)\]/i;
-
-      // will match: "<00:00.00> blablabla"
-      const WORD_REGEX = /<\d{2}:\d{2}(.\d{2,})?>\s*[^\s|<]*/g;
+      const TAG_REGEX = /\[(ar|ti|al|au|by|length|offset|re|ve):(.*)\]/i;
 
       // will match: "[00:00.00]"
       const LINE_TIME_REGEX = /\[\d{2}:\d{2}(.\d{2,})?\]/g;
@@ -24,73 +21,76 @@
       // will match: "<00:00.00>"
       const WORD_TIME_REGEX = /<\d{2}:\d{2}(.\d{2,})?>/g;
 
+      // will match: "<00:00.00> blablabla"
+      const ENHANCED_REGEX = /<\d{2}:\d{2}(.\d{2,})?>\s*[^\s|<]*/g;
+
       /**
        * parse lrc to javascript object
-       * @param {string} text - lrc text
+       * @param {string} lrc - lrc text
        * @returns {Object} parsed lrc data
        */
-      function parser(text) {
-            const lines = text.split(/\r?\n/);
+      function parser(lrc) {
+            if (lrc == '' || !lrc.trim()) {
+                  console.warn("[Liricle] LRC is empty.");
+            }
 
             const output = {
-                  tags: {},
+                  tags : {},
                   lines: [],
-                  enhanced: isEnhanced(text)
+                  enhanced: isEnhanced(lrc)
             };
+
+            const lines = lrc.split(/\r?\n/);
 
             // parsing started
             lines.forEach(value => {
-                  const tags = extractTags(value);
-                  const line = extractLine(value);
+                  const tag  = parseTag(value);
+                  const line = parseLine(value);
 
-                  if (tags) output.tags[tags.name] = tags.value;
+                  if (tag)  output.tags[tag.key] = tag.value;
                   if (line) output.lines.push(...line);
             });
 
-            // if lrc has multiple timestamps "[mm:ss.xx]" in the same line
-            // parser will split into individual lines
-            // so we have to reorder them.
+            // if lrc has multiple timestamps "[mm:ss.xx]" in the same line.
+            // parser will split into individual lines. so, we have to reorder them.
             output.lines = sortLines(output.lines);
 
             return output;
       }
 
       /**
-       * extract tag data from lrc
-       * @param {string} text - lrc line
+       * parse lrc tag
+       * @param {string} line - lrc line value
        * @return {(Object|undefined)} extrated tag object or undefined
        */
-      function extractTags(text) {
-            const tags = text.match(TAGS_REGEX);
+      function parseTag(line) {
+            const [, key, value] = line.match(TAG_REGEX) || [];
+            if (!key || !value) return;
 
-            if (!tags) return;
-
-            return {
-                  name: tags[1],
-                  value: tags[2].trim()
-            };
+            return { key, value: value.trim() };
       }
 
       /**
-       * extract time, text and words from lrc
-       * @param {string} line - lrc line
+       * parse time, text and words from lrc
+       * @param {string} line - lrc line value
        * @return {(Array|undefined)} array that contains lrc line object or undefined
        */
-      function extractLine(line) {
-            const times = line.match(LINE_TIME_REGEX);
-            const bucket = [];
+      function parseLine(line) {
+            const output = [];
+            const timestamps = line.match(LINE_TIME_REGEX);
 
-            if (!times) return;
+            if (!timestamps) return;
 
-            times.forEach(value => {
-                  bucket.push({
-                        time: extractTime(value),
-                        text: extractText(line),
+            // lrc can have multiple timestamps "[mm:ss.xx]" on the same line.
+            timestamps.forEach(timestamp => {
+                  output.push({
+                        time : extractTime(timestamp),
+                        text : extractText(line),
                         words: extractWords(line)
                   });
             });
 
-            return bucket;
+            return output;
       }
 
       /**
@@ -112,8 +112,8 @@
        */
       function extractText(line) {
             let text = line.replace(LINE_TIME_REGEX, "");
-            text = text.replace(WORD_TIME_REGEX, "");
-            text = text.replace(/\s{2,}/g, " ");
+                text = text.replace(WORD_TIME_REGEX, "");
+                text = text.replace(/\s{2,}/g, " ");
 
             return text.trim();
       }
@@ -124,23 +124,23 @@
        * @returns {(Array|null)} extracted words or null
        */
       function extractWords(line) {
-            const words = line.match(WORD_REGEX);
-            const bucket = [];
+            const output = [];
+            const words = line.match(ENHANCED_REGEX);
 
             if (!words) return null;
 
-            words.forEach(value => {
+            words.forEach(word => {
                   // extract timestamp "<00:00.00>" with regex
                   // i think it's easier than split them
-                  const time = value.match(WORD_TIME_REGEX)[0];
+                  const timestamp = word.match(WORD_TIME_REGEX)[0];
 
-                  bucket.push({
-                        time: extractTime(time),
-                        text: extractText(value)
+                  output.push({
+                        time: extractTime(timestamp),
+                        text: extractText(word)
                   });
             });
 
-            return bucket;
+            return output;
       }
 
       /**
@@ -172,11 +172,11 @@
        * @returns {boolean} is enhanced?
        */
       function isEnhanced(text) {
-            return WORD_TIME_REGEX.test(text);
+            return ENHANCED_REGEX.test(text);
       }
 
       /**
-       * find closest lyric word and line from given time
+       * find closest word and line from given time
        * @param {Object} data - output data from parser
        * @param {number} time - current time from audio player or something else
        */
@@ -253,6 +253,7 @@
       class Liricle {
             #activeLine = null;
             #activeWord = null;
+            #isLoaded = false;
             #offset = 0;
             #data = {};
             #onLoad = () => {};
@@ -275,14 +276,17 @@
             }
 
             /**
-             * method to load lyric
+             * method to load lyrics
              * @param {Object} options - object that contains 'url' or 'text' properties
              * @param {string} options.text - lrc text
              * @param {string} options.url - lrc file url
              */
             load(options = {}) {
+                  this.#isLoaded = false;
+
                   if (options.text) { 
                         this.#data = parser(options.text);
+                        this.#isLoaded = true;
                         this.#onLoad(this.#data);
                   }
                   
@@ -291,22 +295,29 @@
                               .then(res => res.text())
                               .then(text => {
                                     this.#data = parser(text);
+                                    this.#isLoaded = true;
                                     this.#onLoad(this.#data);
                               })
                               .catch(error => {
-                                    throw Error("failed to load lyric file. " + error.message);
+                                    this.#isLoaded = false;
+                                    throw Error("[Liricle] Failed to load LRC. " + error.message);
                               });
                   }
             }
 
             /**
-             * method to sync lyric
+             * method to sync lyrics
              * @param {number} time - current player time or something else in seconds
              * @param {boolean} [continuous] - always emit sync event (optional)
              */
             sync(time, continuous = false) {
-                  const { line, word } = syncher(this.data, time + this.offset);
-                  const { enhanced } = this.data;
+                  if (!this.#isLoaded) {
+                        // if lrc is not loaded, stop execution.
+                        return console.warn("[Liricle] LRC not loaded yet.");
+                  }
+
+                  const { enhanced } = this.#data;
+                  const { line, word } = syncher(this.#data, time + this.offset);
 
                   if (line == null && word == null) return;
 
