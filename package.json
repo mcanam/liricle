@@ -1,14 +1,20 @@
 {
       "name": "liricle",
-      "version": "4.0.3",
+      "version": "4.0.4",
       "description": "javascript lyric synchronizer library",
       "type": "module",
       "main": "dist/liricle.min.js",
       "module": "src/liricle.js",
+      "types": "types/index.d.ts",
       "scripts": {
             "start": "live-server --open=index.html?dev=true",
             "build": "rollup -c"
       },
+      "files": [
+            "dist",
+            "src",
+            "types"
+      ],
       "repository": {
             "type": "git",
             "url": "git+https://github.com/mcanam/liricle.git"
