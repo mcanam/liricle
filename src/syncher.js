@@ -10,9 +10,11 @@ export default function syncher(data, time) {
       const lines = data.lines;
       line = findLine(lines, time);
 
-      if (line != null && data.enhanced) {
-            const words = line.words;
-            word = findWord(words, time);
+      if (line != null) {
+            if (data.enhanced) {
+                  const words = line.words;
+                  word = findWord(words, time);
+            }
 
             // delete 'words' property from line
             // because we don't need it anymore.
