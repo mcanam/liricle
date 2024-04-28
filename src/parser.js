@@ -16,15 +16,16 @@ const ENHANCED_REGEX = /<\d{2}:\d{2}(.\d{2,})?>\s*[^\s|<]*/g;
  * @returns {Object} parsed lrc data
  */
 export default function parser(lrc) {
-      if (lrc == '' || !lrc.trim()) {
-            console.warn("[Liricle] LRC is empty.");
-      }
-
       const output = {
             tags : {},
             lines: [],
             enhanced: isEnhanced(lrc)
       };
+
+      if (typeof lrc != 'string' || !lrc.trim()) {
+            console.warn("[Liricle] LRC is empty.");
+            return output;
+      }
 
       const lines = lrc.split(/\r?\n/);
 
