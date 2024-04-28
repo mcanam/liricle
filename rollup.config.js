@@ -1,6 +1,7 @@
-import { terser } from "rollup-plugin-terser";
-import pkg from "./package.json";
+import terser from '@rollup/plugin-terser';
+import fs from 'node:fs';
 
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
 const header = `
 /*!
  * ${pkg.name} v${pkg.version}
