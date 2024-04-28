@@ -1,6 +1,6 @@
 
 /*!
- * liricle v4.0.3
+ * liricle v4.0.5
  * javascript lyric synchronizer library
  * https://github.com/mcanam/liricle
  * MIT license by mcanam
@@ -30,15 +30,16 @@
        * @returns {Object} parsed lrc data
        */
       function parser(lrc) {
-            if (lrc == '' || !lrc.trim()) {
-                  console.warn("[Liricle] LRC is empty.");
-            }
-
             const output = {
                   tags : {},
                   lines: [],
                   enhanced: isEnhanced(lrc)
             };
+
+            if (typeof lrc != 'string' || !lrc.trim()) {
+                  console.warn("[Liricle] LRC is empty.");
+                  return output;
+            }
 
             const lines = lrc.split(/\r?\n/);
 
@@ -187,9 +188,11 @@
             const lines = data.lines;
             line = findLine(lines, time);
 
-            if (line != null && data.enhanced) {
-                  const words = line.words;
-                  word = findWord(words, time);
+            if (line != null) {
+                  if (data.enhanced) {
+                        const words = line.words;
+                        word = findWord(words, time);
+                  }
 
                   // delete 'words' property from line
                   // because we don't need it anymore.
