@@ -147,6 +147,10 @@ function main(Liricle) {
                   $menu_lyric_offset.value = tags.offset;
             }
 
+            // set artist and title
+            $lyric_artist.innerText = ("ar" in tags) ? `Artist: ${tags.ar}` : "";
+            $lyric_title.innerText = ("ti" in tags) ? `Title: ${tags.ti}` : "";
+
             lines.forEach(line => {
                   const $line = document.createElement("div");
                   $line.className = "lyric__line";
