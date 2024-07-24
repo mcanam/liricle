@@ -1,4 +1,6 @@
+import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
+import dts from 'rollup-plugin-dts';
 import fs from 'node:fs';
 
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
@@ -11,25 +13,52 @@ const header = `
  */
 `;
 
-const config = properties => {
-      return {
-            format: "umd",
-            banner: header,
-            name: "Liricle",
-            ...properties
-      };
-};
-
-export default {
-      input: "src/liricle.js",
-      output: [
-            config({
-                  file: "dist/liricle.js"
-            }),
-            config({
-                  file: "dist/liricle.min.js",
-                  sourcemap: true,
-                  plugins: [terser()]
-            })
-      ]
-};
+export default [
+      {
+            input: 'src/liricle.ts',
+            output: {
+                  file: 'dist/liricle.js',
+                  format: 'umd',
+                  banner: header,
+                  name: 'Liricle',
+                  sourcemap: true
+            },
+            plugins: [
+                  typescript({ 
+                        compilerOptions: { 
+                              declaration: true,
+                              declarationDir: './types'
+                        }
+                  }),
+                  terser()
+            ]
+      },
+      {
+            input: 'src/liricle.ts',
+            output: {
+                  file: 'dist/esm/liricle.mjs',
+                  format: 'esm',
+                  banner: header,
+                  sourcemap: true
+            },
+            plugins: [typescript()]
+      },
+      {
+            input: 'src/liricle.ts',
+            output: {
+                  file: 'dist/cjs/liricle.cjs',
+                  format: 'cjs',
+                  banner: header,
+                  sourcemap: true
+            },
+            plugins: [typescript()]
+      },
+      {
+            input: 'dist/types/liricle.d.ts',
+            output: {
+                  file: 'dist/liricle.d.ts',
+                  format: 'esm'
+            },
+            plugins: [dts()]
+      }
+];

@@ -1,0 +1,7 @@
+{
+      "typescript.preferences.quoteStyle": "single",
+      "javascript.preferences.quoteStyle": "single",
+      "prettier.singleQuote": true,
+      "editor.tabSize": 6,
+      "editor.detectIndentation": false
+}
