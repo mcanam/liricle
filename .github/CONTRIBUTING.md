@@ -1,18 +1,19 @@
 ## Report Bug 🐛
 
-If you find a bug or think of an improvement, feel free to [open an issue](https://github.com/mcanam/liricle/issues).
+If you find a bug or have an improvement in mind, feel free to [open an issue](https://github.com/mcanam/liricle/issues).
 
 ## Feature Request 🌱
 
-Feature requests are always welcome. If you are thinking of contributing a feature, please [open an issue](https://github.com/mcanam/liricle/issues) first to discuss it.
+Feature requests are always welcome. If you want to contribute a feature, please [open an issue](https://github.com/mcanam/liricle/issues) first to discuss it.
 
-## Fixing Bug 👩‍💻
+## Contributing Code 👩‍💻
 
-You'll likely start by forking the repository on GitHub and then cloning it locally.
+To contribute code, follow these steps:
 
-1. Fork this project.
-2. Clone it locally `git clone https://github.com/{YOUR_USERNAME}/liricle`.
-4. Create a work branch (`git checkout -b your-branch`).
-5. Commit your changes (`git commit -m 'your changes'`).
-6. Push the branch (`git push origin your-branch`).
+1. Fork this repository.
+2. Clone your fork locally: `git clone https://github.com/{YOUR_USERNAME}/liricle`.
+3. Create a new branch: `git checkout -b your-branch`.
+4. Make your changes and commit them: `git commit -m 'your changes'`.
+5. Run the tests and ensure all tests pass: `npm test`.
+6. Push your branch: `git push origin your-branch`.
 7. Open a Pull Request from your fork back to this repository.
