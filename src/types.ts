@@ -51,9 +51,11 @@ export interface SyncedData {
 }
 
 export type LoadEventCallback = (data: LyricsData) => any;
+export type LoadErrorEventCallback = (error: Error) => any;
 export type SyncEventCallback = (line: LineData | null, word: WordData | null) => any;
 
 export type EventTypeMap = {
       load: LoadEventCallback;
+      loaderror: LoadErrorEventCallback;
       sync: SyncEventCallback;
 }

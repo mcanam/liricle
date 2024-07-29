@@ -1,6 +1,6 @@
 # Liricle
 
-Liricle is simple javascript library to synchronize lyrics with music in real-time using the [LRC](https://en.wikipedia.org/wiki/LRC_(file_format)) file format. It supports both basic and enhanced LRC formats, providing methods to load, sync, and adjust lyrics.
+Liricle is a simple JavaScript library to synchronize lyrics with music in real-time using the [LRC](https://en.wikipedia.org/wiki/LRC_(file_format)) file format. It supports both basic and enhanced LRC formats, providing methods to load, sync, and adjust lyrics.
 
 **[Live Demo →](https://mcanam.github.io/liricle)**
 
@@ -30,7 +30,7 @@ const liricle = new Liricle();
 
 ### Registering Events
 
-Before loading lyrics, you should register event handlers to handle events such as when the lyrics are loaded and when the lyrics are synced. This ensures that your application responds to these events correctly.
+Before loading lyrics, you should register event handlers to handle events such as when the lyrics are loaded, when the lyrics are synced, and when there is an error loading the lyrics. This ensures that your application responds to these events correctly.
 
 **Example:**
 
@@ -38,6 +38,11 @@ Before loading lyrics, you should register event handlers to handle events such 
 // Register the load event
 liricle.on("load", (data) => {
   console.log("Lyrics loaded:", data);
+});
+
+// If you load lyrics from a URL, you can listen for the loaderror event when loading fails
+liricle.on("loaderror", (error) => {
+  console.error("Failed to load lyrics:", error.message);
 });
 
 // Register the sync event
@@ -205,6 +210,21 @@ liricle.on("load", (data) => {
 
 </details>
 
+### `loaderror`
+
+**Callback Signature:**
+
+```javascript
+liricle.on("loaderror", (error) => {
+  // Handle loaderror event
+});
+```
+
+**Parameters:**
+
+- `error` (Error): Error object containing details about the failure.
+
+
 ### `sync`
 
 **Callback Signature:**
@@ -244,5 +264,3 @@ Want to contribute? [Let's go](https://github.com/mcanam/liricle/blob/main/.gith
 ## License
 
 Distributed under the MIT License. See [LICENSE](https://github.com/mcanam/liricle/blob/main/LICENSE) for more information.
-
----

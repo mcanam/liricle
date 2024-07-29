@@ -1,6 +1,6 @@
 import parser from './parser';
 import syncer from './syncer';
-import { EventTypeMap, LoadEventCallback, LoadOptions, LyricsData, SyncEventCallback } from './types';
+import { EventTypeMap, LoadErrorEventCallback, LoadEventCallback, LoadOptions, LyricsData, SyncEventCallback } from './types';
 
 export default class Liricle {
       /* private */ #data: LyricsData | null = null;
@@ -9,6 +9,7 @@ export default class Liricle {
       /* private */ #activeWord: number | null = null;
       /* private */ #isLoaded = false;
       /* private */ #onLoad: LoadEventCallback = () => { };
+      /* private */ #onLoadError: LoadErrorEventCallback = () => { };
       /* private */ #onSync: SyncEventCallback = () => { };
 
       /**
@@ -44,6 +45,10 @@ export default class Liricle {
             const url = options?.url;
             const skipBlankLine = options?.skipBlankLine ?? true;
 
+            this.#isLoaded = false;
+            this.#activeLine = null;
+            this.#activeWord = null;
+
             if (!text?.trim() && !url?.trim()) {
                   throw Error('[Liricle]: text or url options required.');
             }
@@ -51,10 +56,6 @@ export default class Liricle {
             if (text && url) {
                   throw Error('[Liricle]: text and url options cant be used together.');
             }
-
-            this.#isLoaded = false;
-            this.#activeLine = null;
-            this.#activeWord = null;
 
             if (text) {
                   this.#data = parser(text, { skipBlankLine });
@@ -65,7 +66,7 @@ export default class Liricle {
             if (url) {
                   fetch(url)
                         .then(res => {
-                              if (!res.ok) throw Error('network error with status ' + res.status);
+                              if (!res.ok) throw Error('Network error with status ' + res.status);
                               return res.text();
                         })
                         .then(text => {
@@ -74,7 +75,7 @@ export default class Liricle {
                               this.#onLoad(this.#data);
                         })
                         .catch(error => {
-                              throw Error('[Liricle]: failed to load lyrics because ' + error.message);
+                              this.#onLoadError(error);
                         });
             }
       }
@@ -109,13 +110,16 @@ export default class Liricle {
 
       /**
        * Listen liricle event.
-       * @param { K } type - The type of event ('load' or 'sync').
+       * @param { K } type - The type of event ('load', 'loaderror' or 'sync').
        * @param { EventTypeMap[K] } callback - The callback function to handle the event.
        */
       on<K extends keyof EventTypeMap>(type: K, callback: EventTypeMap[K]) {
             switch (type) {
                   case 'load':
                         this.#onLoad = callback as LoadEventCallback;
+                        break;
+                  case 'loaderror':
+                        this.#onLoadError = callback as LoadErrorEventCallback;
                         break;
                   case 'sync':
                         this.#onSync = callback as SyncEventCallback;

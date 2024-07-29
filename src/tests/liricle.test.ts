@@ -61,7 +61,19 @@ describe('Liricle', () => {
       });
 
       test('handle fetch error correctly',  () => {
-            // not yet testable
+            const mockResponse = {
+                  ok: false,
+                  status: 404,
+                  statusText: 'Not Found'
+            };
+
+            global.fetch = jest.fn().mockResolvedValue(mockResponse);
+
+            liricle.on('loaderror', error => {
+                  expect(error.message).toEqual('Network error with status 404');
+            });
+
+            liricle.load({ url: 'http://example.com/sample.lrc' });
       });
 
       test('synchronizes lyrics correctly', () => {

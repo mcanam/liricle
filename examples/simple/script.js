@@ -13,6 +13,11 @@ liricle.on("load", data => {
       console.log(data);
 });
 
+// if you load lyrics from a URL, you can listen for the loaderror event when loading fails
+liricle.on("loaderror", (error) => {
+  console.error("Failed to load lyrics:", error.message);
+});
+
 // listen to on sync event
 liricle.on("sync", (line, word) => {
       console.log("current line => ", line);
