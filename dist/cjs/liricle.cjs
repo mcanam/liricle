@@ -1,6 +1,6 @@
 
 /*!
- * liricle v4.0.5
+ * liricle v4.2.0
  * Lyrics Synchronizer
  * https://github.com/mcanam/liricle#readme
  * MIT license by mcanam
@@ -205,6 +205,7 @@ class Liricle {
     /* private */ #activeWord = null;
     /* private */ #isLoaded = false;
     /* private */ #onLoad = () => { };
+    /* private */ #onLoadError = () => { };
     /* private */ #onSync = () => { };
     /**
      * Gets the currently loaded lyrics data.
@@ -235,15 +236,15 @@ class Liricle {
         const text = options?.text;
         const url = options?.url;
         const skipBlankLine = options?.skipBlankLine ?? true;
+        this.#isLoaded = false;
+        this.#activeLine = null;
+        this.#activeWord = null;
         if (!text?.trim() && !url?.trim()) {
             throw Error('[Liricle]: text or url options required.');
         }
         if (text && url) {
             throw Error('[Liricle]: text and url options cant be used together.');
         }
-        this.#isLoaded = false;
-        this.#activeLine = null;
-        this.#activeWord = null;
         if (text) {
             this.#data = parser(text, { skipBlankLine });
             this.#isLoaded = true;
@@ -253,7 +254,7 @@ class Liricle {
             fetch(url)
                 .then(res => {
                 if (!res.ok)
-                    throw Error('network error with status ' + res.status);
+                    throw Error('Network error with status ' + res.status);
                 return res.text();
             })
                 .then(text => {
@@ -262,7 +263,7 @@ class Liricle {
                 this.#onLoad(this.#data);
             })
                 .catch(error => {
-                throw Error('[Liricle]: failed to load lyrics because ' + error.message);
+                this.#onLoadError(error);
             });
         }
     }
@@ -293,13 +294,16 @@ class Liricle {
     }
     /**
      * Listen liricle event.
-     * @param { K } type - The type of event ('load' or 'sync').
+     * @param { K } type - The type of event ('load', 'loaderror' or 'sync').
      * @param { EventTypeMap[K] } callback - The callback function to handle the event.
      */
     on(type, callback) {
         switch (type) {
             case 'load':
                 this.#onLoad = callback;
+                break;
+            case 'loaderror':
+                this.#onLoadError = callback;
                 break;
             case 'sync':
                 this.#onSync = callback;

@@ -38,9 +38,11 @@ interface LyricsData {
     enhanced: boolean;
 }
 type LoadEventCallback = (data: LyricsData) => any;
+type LoadErrorEventCallback = (error: Error) => any;
 type SyncEventCallback = (line: LineData | null, word: WordData | null) => any;
 type EventTypeMap = {
     load: LoadEventCallback;
+    loaderror: LoadErrorEventCallback;
     sync: SyncEventCallback;
 };
 
@@ -74,7 +76,7 @@ declare class Liricle {
     sync(time: number, continuous?: boolean): any;
     /**
      * Listen liricle event.
-     * @param { K } type - The type of event ('load' or 'sync').
+     * @param { K } type - The type of event ('load', 'loaderror' or 'sync').
      * @param { EventTypeMap[K] } callback - The callback function to handle the event.
      */
     on<K extends keyof EventTypeMap>(type: K, callback: EventTypeMap[K]): void;
