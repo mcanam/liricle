@@ -1,0 +1,63 @@
+/* reset default css styles */
+
+*,
+*::before,
+*::after {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+}
+
+html,
+body {
+      width: 100%;
+      height: 100%;
+}
+
+body {
+      font-family: sans-serif;
+}
+
+/* container */
+
+.container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+}
+
+/* lyrics */
+
+.lyrics-wrapper {
+      width: 100%;
+      flex-grow: 1;
+      padding: 260px 0 260px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+}
+
+.lyrics-line {
+      text-align: center;
+      font-size: 2em;
+      opacity: 0.5;
+      transition: 0.2s;
+}
+
+.lyrics-line.active-line {
+      opacity: 1;
+      font-weight: 700;
+}
+
+/* player */
+
+.player-wrapper {
+      width: 100%;
+      padding: 20px;
+}
+
+.player {
+      width: 100%;
+}
